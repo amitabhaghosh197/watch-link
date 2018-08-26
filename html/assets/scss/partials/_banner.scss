@@ -1,0 +1,16 @@
+.banner-section{
+	@include flex-box(wrap);
+	height: 100vh;
+	background: map-get($colors, black);
+
+	@include media("<=v-1280"){
+		height: 674px;
+	}
+}
+
+.banner-slider__featured-img{
+	@include background-image( cover, no-repeat, 80% center);
+	height: $full-100;
+	width:$full-100;
+	display: block;
+}

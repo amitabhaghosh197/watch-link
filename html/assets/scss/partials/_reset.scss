@@ -1,0 +1,100 @@
+*{
+	position: relative;
+	margin: 0;
+	padding:0;
+	-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing : grayscale;
+    font-family: $gotham-light;
+}
+
+*, *:before, *:after{
+	@include browser-prefix( box-sizing, border-box);
+}
+
+html, body{
+	width: $full-100;
+	height: $full-100;
+	margin: 0;
+	padding: 0;
+}
+
+html{
+    -webkit-text-size-adjust: $full-100;
+    -ms-text-size-adjust : $full-100;
+    -ms-overflow-style : scrollbar;
+    font-size: $full-100;
+}
+
+body{
+	overflow-x: hidden;
+	background-color: map-get($colors, white);
+	color: map-get($colors, para-grey);
+	font-size: $base-font-size;
+	@include media("<=v-768"){
+		font-size: $base-font-size + 2;
+	}
+}
+
+img, svg{
+	max-width: $full-100;
+}
+img{
+	@include display(inline-block);
+}
+
+//
+// Typography
+//==========================================
+
+h1, h2, h3,h4,h5,h6{
+ font-family : $gotham-medium;
+ margin-top: 0;
+}
+
+p{
+	color: map-get($colors, para-grey);
+	font-size: $base-font-size;
+}
+
+a{
+	color: map-get($colors, red);
+	&:hover, &:focus{
+		text-decoration: none;
+	}
+}
+
+a:focus,
+button:focus,
+input:focus,
+.btn:focus,
+.btn span:focus,
+.slick-slide:focus {
+    outline: 0;
+}
+
+.btn.active.focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn:active:focus,
+.btn:focus {
+    outline: 0px !important;
+    outline-offset: 0px !important;
+    box-shadow:none;
+}
+
+.btn.active,
+.btn:active {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+ul, ol,dl{
+    margin: 0;
+    padding: 0;
+}
+
+ul{
+    list-style: none;
+}

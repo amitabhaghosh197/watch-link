@@ -1,0 +1,84 @@
+//
+// FONTS
+// ==========================================================================
+
+$biloxi-scripts: 'BiloxiScript' !default;
+$cinzel-regular : 'Cinzel-Regular' !default;
+$gotham-black :  'Gotham-Black' !default;
+$gotham-bold : 'Gotham-Bold' !default;
+$gotham-light : 'Gotham-Light' !default;
+$gotham-light-italic : 'Gotham-LightItalic' !default;
+$gotham-medium : 'Gotham-Medium' !default;
+
+//
+// FONT SIZES
+// ==========================================================================
+
+$base-font-size : 16px !default;
+
+//
+// FONT WEIGHT
+// ==========================================================================
+
+$font-weight-bold : 900 !default;
+$font-weight-light: 300 !default;
+
+//
+// COLORS
+// ==========================================================================
+$colors :(
+	 white : #ffffff,
+	 black : #0b0b0b,
+	 red : #de1255,
+	 gradient-red : #ed196e,
+	 gradient-violet : #841b8b,
+	 thin-grey : #f6f1f1,
+	 medium-grey : #999999,
+	 para-grey : #060606,
+	 light-yellow : #d7a678,
+	 light-grey : #e9e6e6
+	  );
+
+//
+// DIMENSIONS
+// ==========================================================================
+$full-100 : 100% !default;
+
+//
+// Z INDEX
+// ==========================================================================
+
+$z-index-max : 1500 !default;
+$z-index-min : 5 !default;
+
+
+//
+// BREAKPOINTS
+// ==========================================================================
+
+$breakpoints: (
+    v-320  : 320px,
+    v-360  : 360px,
+    v-375  : 375px,
+    v-390  : 390px,
+    v-415  : 415px,
+    v-425  : 425px,
+    v-480  : 480px,
+    v-533  : 533px,
+    v-600  : 600px,
+    v-650  : 650px,
+    v-767  : 767px,
+    v-768  : 768px,
+    v-800  : 800px,
+    v-850  : 850px,
+    v-991  : 991px,
+    v-992  : 992px,
+    v-1024 : 1024px,
+    v-1199 : 1199px,
+    v-1200 : 1200px,
+    v-1280 : 1280px,
+    v-1360 : 1360px,
+    v-1440 : 1440px,
+    v-1600 : 1600px,
+    v-1900 : 1900px
+) ;

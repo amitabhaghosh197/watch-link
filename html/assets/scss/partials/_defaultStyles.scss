@@ -1,0 +1,28 @@
+.page-wrapper{
+	@include flex-box(wrap);
+	min-width: $full-100;
+	min-width: 100vw;
+	min-height: $full-100;
+	min-height: 100vh;
+	overflow: hidden;
+}
+
+.full-width-grid{
+	@include flex-box(wrap);
+	min-height: 1px;
+}
+
+//
+// RESPONSIVE STYLES
+//=======================================
+[data-screen="desktop"]{
+	@include media("<=v-1199"){
+		@include display(none);
+	}
+}
+
+[data-screen="mob-tab"]{
+	@include media(">=v-1200"){
+		@include display(none);
+	}
+}

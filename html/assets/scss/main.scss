@@ -1,8 +1,18 @@
-@import 'animate-css/animate_css';
+@import 'partials/variables';
 @import 'font-awesome/font-awesome';
+@import 'partials/custom_fonts';
+@import 'animate-css/animate';
 @import 'bootstrap/bootstrap';
 @import 'include-media/include-media';
 @import 'slick/slick';
 @import 'slick/slick-theme';
+@import 'partials/functions';
+@import 'partials/mixins';
+@import 'partials/silentClasses';
+@import 'partials/reset';
+@import 'partials/defaultStyles';
+@import 'partials/header';
+@import 'partials/banner';
+
 
 
