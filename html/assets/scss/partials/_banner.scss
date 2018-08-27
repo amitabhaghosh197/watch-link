@@ -3,9 +3,9 @@
 	height: 100vh;
 	background: map-get($colors, black);
 
-	@include media("<=v-1280"){
+	/* @include media("<=v-1280"){
 		height: 674px;
-	}
+	} */
 }
 
 .banner-slider__featured-img{
@@ -13,4 +13,22 @@
 	height: $full-100;
 	width:$full-100;
 	display: block;
+
+
+	@media screen and (max-width: 1280px) and (max-height:1024px){
+		@include background-image( contain, no-repeat, 80% 0);
+	}
+
+	@media screen and (max-width: 1280px) and (max-height:720px){
+		@include background-image( cover, no-repeat, 40% center);
+	}
+}
+.banner-top-gradient-glass{
+	z-index: $z-index-max - 100;
+	@include full-width;
+	height: $header-gradient-height;
+	@extend %transparent-glass-gradient;
+	position:absolute;
+	top:0;
+	left:0;
 }
