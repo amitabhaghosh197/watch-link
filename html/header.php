@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-        
+
         <link rel="stylesheet" href="assets/css/main.css">
 
          <script defer="defer" src="assets/js/apps.min.js"></script>
@@ -27,13 +27,66 @@
     <![endif]-->
 
     <div id="wathchLinksite" class="page-wrapper" >
-     
+       <header class="site-header full-width-grid">
+         <div class="site-header__inner-wrapper">
+           <div class="site-header__logo-wrapper">
+              <a href="" class="site-header--logo">
+                <?php include('templates/svg/white-logo.php'); ?>
+              </a>
+           </div>
+             <div class="site-header__navbar-wrapper">
+                <section class="site-header__top">
+                  <div class="language_section ">
+                    <div class="form-group">
+                      <span class="header__language">EN</span>
+                    </div>
+                  </div>
+                  <div class="search__section ">
+                     <form class="search__section__form" id="" action="/">
+                       <div class="form-group">
+                         <input type="search"
+                         class="form-control search--form-control"
+                         placeholder="Search your favourite watches..." >
+                           <button class="btn btn--search-submit">
+                             <i class="fa fa-search" aria-hidden="true"></i>
+                           </button>
+                       </div>
+                     </form>
+                  </div>
+                  <div class="locate__section ">
+                    <button class="btn btn--locate-us">
+                      <i class="icon-locate"></i>Locate us
+                   </button>
+                  </div>
+
+                </section>
+                <!-- site-header__top -->
+
+                  <nav class="site-header__navbar">
+                    <ul class="site-header__navbar-nav">
+                      <li>
+                        <a href="">Home</a>
+                      </li>
+                      <li>
+                        <a href="">Brand</a>
+                      </li>
+                      <li>
+                        <a href="">Men</a>
+                      </li>
+                      <li>
+                        <a href="">Women</a>
+                      </li>
+                      <li>
+                        <a href="">Contact</a>
+                      </li>
+                    </ul>
+
+                  </nav>
+             </div>
+
+         </div>
+       </header>
      <!--  For Desktop Only -->
    <div class="full-width-grid" data-screen="desktop">
        <?php include 'banner.php' ; ?>
    </div>
-         
-     
-         
-    
-    

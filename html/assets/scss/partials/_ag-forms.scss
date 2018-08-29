@@ -1,0 +1,36 @@
+.form-group{
+  width: $full-100;
+}
+.form-control{
+  @include border-radius(0px);
+}
+.search--form-control{
+  font-style:italic;
+  @include transition(all ease 1.0s);
+  @include placeholder{
+    color:map-get($colors, white);
+
+
+  }
+  background:transparent;
+  border-bottom: 1px solid map-get($colors, white);
+
+  &:hover, &:focus{
+    background: rgba(map-get($colors, black), 0.50);
+    border-bottom: 1px solid rgba(map-get($colors,white), 0.30);
+  }
+  &:focus{
+    border-top-color:transparent;
+    border-left-color:transparent;
+    border-right-color:transparent;
+    border-bottom: 1px solid rgba(map-get($colors,white), 0);
+    box-shadow: none;
+  }
+}
+
+.header__language{
+  color:map-get($colors, white);
+  font-weight: $font-weight-medium-bold;
+  padding: px2rem(9px) px2rem(12px);
+  @include display(block);
+}

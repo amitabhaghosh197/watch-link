@@ -1,0 +1,31 @@
+.btn{
+  @include border-radius(0px);
+  cursor:pointer;
+}
+.btn--locate-us{
+  background: transparent;
+  color: map-get($colors, white);
+  font-family: $gotham-book;
+  text-transform: uppercase;
+  font-size:px2rem(15px);
+  padding: px2rem(7px) px2rem(10px);
+  font-weight: $font-weight-medium-bold;
+  @include transition(all ease 1.0s);
+
+  &:hover, &:focus{
+    background: map-get($colors, white);
+    color: map-get($colors, black);
+  }
+ & i{
+   font-size: px2rem(22px);
+ }
+
+}
+
+.btn--search-submit{
+  background:transparent;
+  position: absolute;
+  color:map-get($colors, white);
+  top:0;
+  right:0;
+}

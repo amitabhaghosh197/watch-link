@@ -43,7 +43,7 @@
     }
 
     @if $property == 'inline-block'{
-        vertical-align: middle; 
+        vertical-align: middle;
     }
 }
 
@@ -66,8 +66,8 @@
 // PADDING MIXIN //
 //=======================================//
 
-@mixin margin($pos, $padding){
-  margin-#{$pos}: px2rem($padding);
+@mixin padding($pos, $padding){
+  padding-#{$pos}: px2rem($padding);
 }
 
 
@@ -82,8 +82,8 @@
 
   @if $flex-direction {
   	flex-direction: $flex-direction;
-  } 
- 
+  }
+
   width: $full-100;
 }
 
@@ -112,7 +112,7 @@
 @mixin flex-col-grid( $number, $no-max-width: null ){
  $x : decimal-round( $full-width / $number , 2, round );
  flex: 1 0 $x;
- 
+
  @if $no-max-width{
      max-width: none;
  } @else {
@@ -127,10 +127,10 @@
 
 @mixin browser-prefix( $key, $value ){
              #{ $key } : $value;
-     -webkit-#{ $key } : $value; 
-        -moz-#{ $key } : $value; 
+     -webkit-#{ $key } : $value;
+        -moz-#{ $key } : $value;
           -o-#{ $key } : $value;
-         -ms-#{ $key } : $value;   
+         -ms-#{ $key } : $value;
 }
 
 
@@ -218,7 +218,7 @@
     left:50%;
     @include transform(translate(-50%, -50%));
     position: absolute;
-        
+
 }
 
 //=============================================//
@@ -226,7 +226,7 @@
 //=============================================//
 
 @mixin background-image($background-size, $background-repeat, $background-position: null ){
- 
+
     @include browser-prefix(background-size, $background-size );
     background-repeat: $background-repeat;
 

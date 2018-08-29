@@ -10,14 +10,15 @@ const DefaultWLMainScripts = (function(){
  var BannerSliderScripts = function(){
  	var bannerSliderContainer = DefaultWLModel.get('BANNERSLIDER');
  	var $slides = bannerSliderContainer.find('.banner-slider__featured-img');
+	var $slidesHeight = parseInt($slides.innerHeight());
 
     var $window = ag(window);
    function setBannerUlSize() {
    	bannerSliderContainer.css({
    		"width": WindowWidth,
-   		"height": WindowHeight
+   		"height": $slidesHeight
    	});
-
+   bannerSliderContainer.closest('.banner-section').height($slidesHeight);
 
    }
     setBannerUlSize();
@@ -27,18 +28,8 @@ const DefaultWLMainScripts = (function(){
      location.reload(true);
     },300));
 
-		// BannerSlider Container Height for 1280px X 1024px
 
-		enquire.register("screen and (max-width:1280px) and (max-height:1024px)",{
-   		match:function(){
-   			bannerSliderContainer.css({
-   		       "width": WindowWidth  ,
-   		        "height": 634
-   	      });
-				var bannerSliderContainerHeight = parseInt(bannerSliderContainer.innerHeight());
-				bannerSliderContainer.closest(".banner-section").css("height", bannerSliderContainerHeight);
-   		}
-   	});
+
 
     var SlickSlider = new slickSliderView({el: bannerSliderContainer });
     SlickSlider.render({
@@ -59,8 +50,9 @@ const DefaultWLMainScripts = (function(){
     var BannerSlideHeight = parseInt(bannerSliderContainer.innerHeight());
     $slides.css({
     	'width': BannerSliderWidth,
-    	'height': BannerSlideHeight
-    })
+    	//'height': BannerSlideHeight
+    });
+
 
 
 

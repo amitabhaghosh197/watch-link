@@ -42,18 +42,6 @@ const DestDir = {
 	imgDir : assetsDir + '/img/'
 }
 
-// // Notifier
-
-// function notifyAll() {
-//     notifier.notify({
-//         sound: 'Bottle',
-
-//         title: 'Gulp Build',
-//         subtitle: 'Deployed!',
-//         message: 'Check the build folder!'
-//     });
-// };
-
 
 // Static Server + watching scss/mob files
 gulp.task('serve', ['sassify'], function() {
@@ -106,6 +94,30 @@ gulp.task('fileOptimize', function() {
     var jsStream = merge2(scriptMinify);
     return jsStream;
 });
+
+/**
+ * SVGOPTIMIZE
+ * The best way to use with gulp-imagemin
+ * No need to require svgo / any other gulp svg optimize plugins
+ * The other plugins removeViewbox autometically which
+ * is not good for styling with css
+ * So use this process https://www.npmjs.com/package/gulp-imagemin
+ * and use options from SVGO NPM https://www.npmjs.com/package/svgo
+ */
+gulp.task('svg-optimize', function(){
+    return gulp.src(unoptimizedDir+ '/svg/*.svg')
+
+      .pipe(imagemin([
+          imagemin.svgo({
+              plugins:[
+                {removeViewBox: false},
+                {cleanupIDs: false}
+
+              ]
+          })
+      ]))
+      .pipe(gulp.dest(DestDir.imgDir +'svg/' ));
+   });
 
 //Watch
 
