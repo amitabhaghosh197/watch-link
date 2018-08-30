@@ -9410,6 +9410,33 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   background: -webkit-gradient(linear, left top, left bottom, from(rgba(14, 14, 14, 0.99)), to(rgba(14, 14, 14, 0)));
   background: linear-gradient(to bottom, rgba(14, 14, 14, 0.99) 0%, rgba(14, 14, 14, 0) 100%); }
 
+.banner-slider__header .sub-heading {
+  font-family: "Cinzel-Regular";
+  color: #d7a678;
+  font-size: 1.25rem;
+  text-transform: uppercase; }
+  @media (min-width: 1900px) {
+    .banner-slider__header .sub-heading {
+      font-size: 1.875rem; } }
+
+.banner-slider__header .entry-title {
+  color: #ffffff;
+  font-family: "Gotham-Bold";
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 3.125rem; }
+  @media (min-width: 1900px) {
+    .banner-slider__header .entry-title {
+      font-size: 4.375rem; } }
+
+.banner-slider__header .sub-para {
+  font-family: "BiloxiScript";
+  color: #f6f1f1;
+  font-size: 2.1875rem; }
+  @media (min-width: 1900px) {
+    .banner-slider__header .sub-para {
+      font-size: 3.4375rem; } }
+
 * {
   position: relative;
   margin: 0;
@@ -9674,9 +9701,7 @@ ul {
   flex-wrap: wrap;
   width: 100%;
   height: auto;
-  background: #0b0b0b;
-  overflow: hidden;
-  max-height: 900px; }
+  background: #0b0b0b; }
 
 .banner-slider__featured-img {
   background-size: cover;
@@ -9687,8 +9712,6 @@ ul {
   background-repeat: no-repeat;
   background-position: 80% center;
   width: 100%;
-  max-height: 900px;
-  overflow: hidden;
   display: block; }
   @media (min-width: 1440px) {
     .banner-slider__featured-img {
@@ -9712,7 +9735,11 @@ ul {
       background-repeat: no-repeat;
       background-position: 40% center; } }
   .banner-slider__featured-img > img {
-    width: 100vw; }
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+    object-fit: cover;
+    font-family: "object-fit: cover"; }
 
 .banner-top-gradient-glass {
   z-index: 1400;
@@ -9722,6 +9749,18 @@ ul {
   position: absolute;
   top: 0;
   left: 0; }
+
+.banner-slider__header {
+  width: 36.25%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(10%, -21%);
+  -webkit-transform: translate(10%, -21%);
+  -moz-transform: translate(10%, -21%);
+  -o-transform: translate(10%, -21%);
+  -ms-transform: translate(10%, -21%);
+  min-height: 220px; }
 
 .form-group {
   width: 100%; }

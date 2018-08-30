@@ -11,3 +11,33 @@
 
 
 }
+
+%lg-text-sub-heading{
+  font-family: $cinzel-regular;
+  color: map-get($colors, light-yellow);
+  font-size: px2rem(20px);
+  text-transform: uppercase;
+  @include media(">=v-1900"){
+    font-size: px2rem(30px);
+  }
+}
+
+%lg-text-main-heading{
+  color: map-get($colors, white);
+  font-family: $gotham-bold;
+  font-weight:$font-weight-bold;
+  text-transform: uppercase;
+  font-size: px2rem(50px);
+  @include media(">=v-1900"){
+    font-size: px2rem(70px);
+  }
+}
+
+%lg-text-sub-para{
+  font-family: $biloxi-scripts;
+  color: map-get($colors, thin-grey);
+  font-size: px2rem(35px);
+  @include media(">=v-1900"){
+    font-size: px2rem(55px);
+  }
+}

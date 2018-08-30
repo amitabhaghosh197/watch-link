@@ -16,9 +16,10 @@ const DefaultWLMainScripts = (function(){
    function setBannerUlSize() {
    	bannerSliderContainer.css({
    		"width": WindowWidth,
-   		"height": $slidesHeight
+   		//"height": $slidesHeight
+			"height": WindowHeight
    	});
-   bannerSliderContainer.closest('.banner-section').height($slidesHeight);
+   bannerSliderContainer.closest('.banner-section').height(WindowHeight);
 
    }
     setBannerUlSize();
@@ -39,9 +40,8 @@ const DefaultWLMainScripts = (function(){
 			arrows : true,
 			autoplay: true,
 			fade : true,
-			autoplay: true,
-			autoplaySpeed:6000,
-			speed:3000
+			autoplaySpeed:4000,
+			speed:2000
     });
 
     // Set Width & Height of Banner Slides
@@ -50,7 +50,7 @@ const DefaultWLMainScripts = (function(){
     var BannerSlideHeight = parseInt(bannerSliderContainer.innerHeight());
     $slides.css({
     	'width': BannerSliderWidth,
-    	//'height': BannerSlideHeight
+    	'height': WindowHeight
     });
 
 
