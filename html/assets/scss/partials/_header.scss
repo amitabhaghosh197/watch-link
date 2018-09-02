@@ -4,6 +4,7 @@
   top:0;
   left:0;
   z-index: $z-index-max;
+  @include transition(all ease 0.60s);
 
 }
 
@@ -75,4 +76,16 @@
       font-family: $gotham-medium;
     }
   }
+}
+.header-dark{
+  & #whiteLogo{
+    .text-dark{fill:#fff}
+    .st1 {
+      fill: #ffffff;
+      stroke: #ffffff;
+      stroke-miterlimit: 10;
+  }
+  }
+
+
 }

@@ -4,7 +4,7 @@
 	padding:0;
 	-webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing : grayscale;
-    font-family: $gotham-light;
+    font-family: $gotham-book;
 }
 
 *, *:before, *:after{
@@ -30,6 +30,8 @@ body{
 	background-color: map-get($colors, white);
 	color: map-get($colors, para-grey);
 	font-size: $base-font-size;
+	-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing : grayscale;
 	@include media("<=v-768"){
 		font-size: $base-font-size + 2;
 	}
@@ -53,7 +55,9 @@ h1, h2, h3,h4,h5,h6{
 
 p{
 	color: map-get($colors, para-grey);
-	font-size: $base-font-size;
+	font-size: px2rem($base-font-size);
+	font-weight:$font-weight-medium-bold;
+	line-height: 1.7;
 }
 
 a{
@@ -61,6 +65,9 @@ a{
 	&:hover, &:focus{
 		text-decoration: none;
 	}
+}
+.text-italic{
+	font-style:italic !important;
 }
 
 a:focus,

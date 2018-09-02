@@ -1,0 +1,19 @@
+.wl__form-group{
+  @include flex-box(wrap);
+}
+.form-control{
+  background: map-get($colors, thin-grey);
+  border: 1px solid rgba(map-get($colors, thin-grey), 0.3);
+  color: rgba(map-get($colors, para-grey), 0.3);
+  @include placeholder{
+    color: rgba(map-get($colors, para-grey), 0.3);
+  }
+
+  &:focus{
+    border: 1px solid map-get($colors, light-yellow);
+  }
+}
+
+.form-control--textarea-wl{
+  min-height:150px;
+}

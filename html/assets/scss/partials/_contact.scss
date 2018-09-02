@@ -1,0 +1,16 @@
+.wl-contact-modal{
+  z-index: $z-index-max + 200;
+
+  & .modal-footer{
+    padding: px2rem(10px) px2rem(15px);
+    border-top: 0px solid transparent;
+  }
+}
+
+.modal-dialog--contact-modal{
+
+}
+
+.wl-contact-modal__body{
+  @include flex-box(wrap);
+}

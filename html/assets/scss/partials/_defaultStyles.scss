@@ -12,6 +12,59 @@
 	min-height: 1px;
 }
 
+.zoomContainer{ z-index: 9999;}
+.zoomWindow{ z-index: 9999;}
+
+
+// Slick Slider Defaults
+.arrow-font-awesome{
+	& .slick-prev:before, & .slick-next:before{
+		font-family: $font-awesome;
+		color: map-get($colors, black);
+	}
+  & .slick-prev{
+		left: -14px;
+	}
+
+	& .slick-next{
+		right: -14px;
+	}
+	& .slick-prev:before{
+		content: "\f104";
+	}
+
+	& .slick-next:before{
+	  content: "\f105";
+	}
+}
+
+.slick-slider{
+	@include display(none);
+	visibility:hidden;
+	opacity:0;
+	&.slick-initialized{
+		@include display(block);
+		visibility:visible;
+		opacity:1.0;
+	}
+}
+
+.lg-dots-true{
+	.slick-dots{
+		bottom: 30px;
+		& li button:before{
+		  content: "\f10c";
+			font-size: px2rem(15px);
+			color:map-get($colors, white);
+		}
+		& li.slick-active{
+			& button:before{
+				content: "\f111";
+			}
+		}
+	}
+}
+
 //
 // RESPONSIVE STYLES
 //=======================================

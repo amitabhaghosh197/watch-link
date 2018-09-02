@@ -1,43 +1,140 @@
-%transparent-glass-gradient{
-
-
-
+%transparent-glass-gradient {
   background: -moz-linear-gradient(top, rgba(14,14,14,0.99) 0%, rgba(14,14,14,0) 100%);
   background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(14,14,14,0.9)), color-stop(100%, rgba(14,14,14,0)));
   background: -webkit-linear-gradient(top, rgba(14,14,14,0.99) 0%, rgba(14,14,14,0) 100%);
   background: -o-linear-gradient(top, rgba(14,14,14,0.99) 0%, rgba(14,14,14,0) 100%);
   background: -ms-linear-gradient(top, rgba(14,14,14,0.99) 0%, rgba(14,14,14,0) 100%);
   background: linear-gradient(to bottom, rgba(14,14,14,0.99) 0%, rgba(14,14,14,0) 100%);
-
-
 }
 
-%lg-text-sub-heading{
+%lg-text-sub-heading {
   font-family: $cinzel-regular;
   color: map-get($colors, light-yellow);
   font-size: px2rem(20px);
   text-transform: uppercase;
-  @include media(">=v-1900"){
+  @include media(">=v-1900") {
     font-size: px2rem(30px);
   }
 }
 
-%lg-text-main-heading{
+%lg-text-main-heading {
   color: map-get($colors, white);
   font-family: $gotham-bold;
-  font-weight:$font-weight-bold;
+  font-weight: $font-weight-bold;
   text-transform: uppercase;
   font-size: px2rem(50px);
-  @include media(">=v-1900"){
+  @include media(">=v-1900") {
     font-size: px2rem(70px);
   }
 }
 
-%lg-text-sub-para{
+%lg-text-sub-para {
   font-family: $biloxi-scripts;
   color: map-get($colors, thin-grey);
   font-size: px2rem(35px);
-  @include media(">=v-1900"){
+  @include media(">=v-1900") {
     font-size: px2rem(55px);
   }
+}
+
+%red-violet-bg {
+  background: rgba(237,25,110,1);
+  background: -moz-linear-gradient(left, rgba(237,25,110,1) 0%, rgba(132,27,139,1) 100%);
+  background: -webkit-gradient(left top, right top, color-stop(0%, rgba(237,25,110,1)), color-stop(100%, rgba(132,27,139,1)));
+  background: -webkit-linear-gradient(left, rgba(237,25,110,1) 0%, rgba(132,27,139,1) 100%);
+  background: -o-linear-gradient(left, rgba(237,25,110,1) 0%, rgba(132,27,139,1) 100%);
+  background: -ms-linear-gradient(left, rgba(237,25,110,1) 0%, rgba(132,27,139,1) 100%);
+  background: linear-gradient(to right, rgba(237,25,110,1) 0%, rgba(132,27,139,1) 100%);
+}
+
+%grey-white-bg {
+  background: rgba(244,242,242,1);
+  background: -moz-linear-gradient(top, rgba(244,242,242,1) 0%, rgba(255,255,255,0.23) 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(244,242,242,1)), color-stop(100%, rgba(255,255,255,0.23)));
+  background: -webkit-linear-gradient(top, rgba(244,242,242,1) 0%, rgba(255,255,255,0.23) 100%);
+  background: -o-linear-gradient(top, rgba(244,242,242,1) 0%, rgba(255,255,255,0.23) 100%);
+  background: -ms-linear-gradient(top, rgba(244,242,242,1) 0%, rgba(255,255,255,0.23) 100%);
+  background: linear-gradient(to bottom, rgba(244,242,242,1) 0%, rgba(255,255,255,0.23) 100%);
+}
+
+%product-heading-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-family: $gotham-medium;
+  color: map-get($colors, black);
+  text-transform: uppercase;
+  font-size: px2rem(18px);
+  line-height: px2rem(24px);
+  font-weight: $font-weight-bold;
+  @include margin(bottom,28px);
+}
+
+%product-sub-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-family: $gotham-medium;
+  color: map-get($colors, medium-grey);
+  font-weight: $font-weight-bold;
+  @include margin(bottom, 10px);
+  text-transform: uppercase;
+  font-size: px2rem(15px);
+  line-height: px2rem(22px);
+}
+
+%gotham-bold-font{
+  font-family: $gotham-bold;
+  font-weight: $font-weight-bold;
+}
+%gotham-black-font{
+  font-weight:900;
+  font-family: $gotham-black ;
+  letter-spacing:px2rem(0.8px);
+}
+
+%ellipsis-text{
+  text-overflow:ellipsis;
+  overflow:hidden;
+  white-space: nowrap;
+}
+%line-through-text{
+  text-decoration:line-through;
+}
+%mini-gradient-tags{
+  padding: px2rem(3px) px2rem(7px);
+  @include border-radius(2px);
+  @extend %red-violet-bg;
+  color: map-get($colors, white);
+  text-align: center;
+  font-size: px2rem(13px);
+  letter-spacing: px2rem(0.6px);
+}
+
+%small-table-like-wrapper{
+  @include flex-box(wrap);
+  align-items: center;
+  &  > span{
+   flex: 0 1 auto;
+   max-width: none;
+    @include padding(left, 6px);
+    @include padding(right,6px);
+    margin-bottom:0;
+  }
+  @include margin(top, 16px);
+    @include margin(bottom, 16px);
+}
+
+%small-bordered-tags{
+  @include border-radius(2px);
+  border: 1px solid $darker-light-grey;
+  text-align: center;
+  color: $darker-light-grey;
+  padding: px2rem(3px) px2rem(5px);
+  font-size: px2rem(14px);
+
+}
+
+%simple-modal-footer{
+  border-top-color: transparent;
+  padding: px2rem(10px);
+
 }

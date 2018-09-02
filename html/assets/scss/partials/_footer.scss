@@ -1,0 +1,108 @@
+.site-footer{
+
+}
+
+.site-footer__top{
+  background: map-get($colors, black);
+
+  @include media(">=v-1200"){
+    padding: px2rem(87px) px2rem(91px) px2rem(72px);
+  }
+}
+.site-footer__top__header{
+  @include flex-box(wrap);
+  @include absolute-center-flex-box;
+  @include margin(bottom, 35px);
+}
+.site-footer__logo{
+  @include display(inline-block);
+  & svg{
+    width: 290px;
+    height: 73px;
+  }
+}
+
+.site-footer__content{
+  justify-content:center;
+  & p{
+    color: map-get($colors, medium-grey);
+    @include margin(bottom, 35px);
+  }
+}
+.site-footer__content__title{
+  font-family: $gotham-medium;
+  font-weight:$font-weight-medium-bold;
+  color: map-get($colors, white);
+  font-size: px2rem($base-font-size);
+  letter-spacing: px2rem(0.75px);
+  text-transform:uppercase;
+  @include margin(bottom, 30px);
+  &:after{
+    content:"";
+    width:34%;
+    height:2px;
+    background:map-get($colors, white);
+    position: absolute;
+    bottom:-7px;
+    left:50%;
+    @include transform(translateX(-50%));
+    @include display(block);
+  }
+}
+
+.wl-social__nav{
+  text-align:center;
+  @include flex-box(wrap);
+  @include absolute-center-flex-box;
+
+  & > li{
+    padding: px2rem(5px) px2rem(12px);
+    & > a{
+      font-size: px2rem(27px);
+      color: map-get($colors, social-grey);
+      @include display(block);
+      @include transition(all ease 0.5s);
+
+      &:hover, &:focus{
+        color: map-get($colors, white);
+      }
+    }
+  }
+}
+
+.site-footer__bottom{
+ background: map-get($colors, footer-black);
+}
+.site-footer__bottom__inner{
+  @include flex-box(wrap);
+  align-items: center;
+  padding: px2rem(10px) 0;
+
+  & p{
+    color: map-get($colors,  medium-grey);
+    margin-bottom: 0;
+    font-size: px2rem(12px);
+    font-weight: $font-weight-light;
+  }
+  & a{
+    color: map-get($colors, white);
+  }
+}
+
+.chat-bubble{
+  width:82px;
+  height:82px;
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  @extend %red-violet-bg;
+  @include border-radius(50%);
+  overflow:hidden;
+  cursor:pointer;
+  z-index: $z-index-min;
+
+  & img{
+    max-width:60%;
+    @include absolute-center;
+  }
+}

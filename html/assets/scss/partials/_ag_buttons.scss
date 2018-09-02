@@ -29,3 +29,83 @@
   top:0;
   right:0;
 }
+
+.btn--gradient{
+  @extend %red-violet-bg;
+  color:map-get($colors, button-grey);
+  font-family: $gotham-medium;
+  text-transform: uppercase;
+  font-size: px2rem($base-font-size + 3);
+  padding: px2rem(20px) px2rem(15px);
+  border: none;
+  @include transition(all ease 0.75s);
+  font-weight: $font-weight-bold;
+
+  &:hover, &:focus{
+    background: map-get($colors, white);
+    color: map-get($colors, black);
+  }
+
+}
+.btn--border-transparent{
+  padding: px2rem(15px) px2rem(25px);
+  background:transparent;
+  text-align: center;
+  border: 2px solid map-get($colors, light-yellow);
+  color: map-get($colors, light-yellow);
+  text-transform: uppercase;
+  @include transition(all ease 0.6s);
+  @extend %gotham-black-font;
+
+  &:hover, &:focus{
+    background: map-get($colors, light-yellow);
+    color:map-get($colors, white);
+  }
+}
+
+.btn--xs-gradient{
+  @extend %red-violet-bg;
+  color:map-get($colors, white);
+  font-family: $gotham-book;
+  font-size: px2rem($base-font-size );
+  padding: px2rem(8px) px2rem(12px);
+  border: none;
+  @include transition(all ease 1.2s);
+  @include border-radius(3.5px);
+  border: 1px solid map-get($colors, red);
+
+  &:hover, &:focus{
+    background: map-get($colors, black);
+    color: map-get($colors, white);
+    border: 1px solid map-get($colors, black);
+  }
+}
+
+.btn-secondary{
+
+  color:map-get($colors, red);
+  &:hover{
+    background: map-get($colors, thin-grey);
+    border:1px solid map-get($colors, thin-grey);
+  }
+}
+.btn--cancel{
+  position:absolute;
+  top:15px;
+  right:15px;
+  z-index: 500;
+  width:40px;
+  height:40px;
+  @include border-radius(50%);
+  padding:0;
+  @include browser-prefix(background-clip, border-box);
+  background: map-get($colors, light-grey);
+  box-shadow: 0 0 8px rgba(map-get($colors, red),0.20) !important;
+
+  & svg{
+    width: 20px;
+    height: 20px;
+    @include absolute-center;
+    
+  }
+}

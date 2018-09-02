@@ -1,8 +1,8 @@
 <section class="full-width-grid banner-section" id="deskTopMainBanner">
 	<div class="banner-top-gradient-glass"></div>
-	<ul class="banner-slider" id="deskTopBannerSlider">
+	<ul class="banner-slider lg-dots-true" id="deskTopBannerSlider">
 		<li>
-			<a href="" class="banner-slider__featured-img" >
+			<div class="banner-slider__featured-img" >
          <img src="assets/img/banner_1_2500x.jpg"
 				 srcset="
 				         assets/img/banner_1_1200x.jpg 1200w,
@@ -17,12 +17,13 @@
              <h2 class="sub-heading">Parmigiani Fleurier Tonda</h2>
 						 <h1 class="entry-title">New Arrival</h1>
 						 <h3 class="sub-para">Exclusive Collection</h3>
+						 <a href="" class="btn btn--gradient">Discover More</a>
 					</header>
-			</a>
+			</div>
 		</li>
 
 		<li>
-			<a class="banner-slider__featured-img" >
+			<div class="banner-slider__featured-img" >
        <img src="assets/img/banner_2__2500x.jpg"
 			 srcset="
 			   assets/img/banner_2_1200x.jpg 1200w,
@@ -37,8 +38,9 @@
 						<h2 class="sub-heading">ROLEX WATCHES</h2>
 						<h1 class="entry-title">New Arrival</h1>
 						<h3 class="sub-para">Exclusive Collection</h3>
+						<a href="" class="btn btn--gradient">Discover More</a>
 				 </header>
-			</a>
+			</div>
 		</li>
 	</ul>
 

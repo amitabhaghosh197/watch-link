@@ -10,6 +10,7 @@ $gotham-light : 'Gotham-Light' !default;
 $gotham-light-italic : 'Gotham-LightItalic' !default;
 $gotham-medium : 'Gotham-Medium' !default;
 $gotham-book : 'Gotham-Book' !default;
+$font-awesome : 'FontAwesome' !default;
 
 //
 // FONT SIZES
@@ -38,8 +39,14 @@ $colors :(
 	 medium-grey : #999999,
 	 para-grey : #060606,
 	 light-yellow : #d7a678,
-	 light-grey : #e9e6e6
+	 light-grey : #e9e6e6,
+	 button-grey : #e6d5cc,
+	 yellow : #ffc315 ,
+	 min-light-grey : #e9e9e9,
+	 social-grey : #4b4a4a,
+	 footer-black : #181818
 	  );
+		$darker-light-grey: darken(map-get($colors, light-grey ), 15%);
 
 //
 // DIMENSIONS
@@ -47,6 +54,8 @@ $colors :(
 $full-100 : 100% !default;
 $header-gradient-height:250px !default;
 $desktop-header-height: 150px !default;
+$brand-section-height: 140px !default;
+$product-image-height: 364px !default;
 
 //
 // Z INDEX

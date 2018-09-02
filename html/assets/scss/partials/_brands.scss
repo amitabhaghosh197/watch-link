@@ -1,0 +1,77 @@
+.brand-wrapper{
+  min-height:$brand-section-height;
+  background:map-get($colors, white);
+  justify-content: center;
+  align-items: center;
+}
+
+.brand-wrapper__slider{
+  width: 68.75%;
+  @include auto-margin;
+  @include padding(left, 15px);
+  @include padding(right, 15px);
+}
+.brand-items{
+  @include padding(left, 10px);
+  @include padding(right, 10px);
+  text-align:center;
+  min-height:70px;
+  & img{
+    margin: auto;
+    @include absolute-center;
+  }
+}
+
+.call-to-action-wrapper{
+  min-height: 120px;
+}
+.call-action__col{
+  @include default-flex-col(50%);
+  height:$full-100;
+
+  &.preowned--watches{
+    background: map-get($colors, thin-grey );
+    & .call-action__col__inner-wrapper{
+      & span{
+        color: map-get($colors, light-yellow);
+      }
+
+      & .call-action__icon{
+        color: map-get($colors, light-yellow);
+      }
+    }
+  }
+  &.unworns--watches{
+    background: map-get($colors, light-grey);
+    & span, & .call-action__icon{
+      color: map-get($colors, black);
+    }
+  }
+}
+
+.call-action__col__inner-wrapper{
+  height:$full-100;
+  justify-content: center;
+  align-items: center;
+  padding: px2rem(20px) 0;
+
+  & span{
+    font-family: $cinzel-regular;
+    font-size: px2rem($base-font-size + 19);
+    font-weight: $font-weight-bold;
+    letter-spacing: px2rem(1.01px);
+    @include padding(left, 15px);
+
+  }
+}
+
+.call-action__icon{
+  margin-left: px2rem(9px);
+}
+#oldWatch{
+  width:20%;
+  & .st0{fill:#d7a678 !important};
+}
+#newWatch{
+  width:30%;
+}
