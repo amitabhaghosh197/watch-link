@@ -13,4 +13,22 @@
 
 .wl-contact-modal__body{
   @include flex-box(wrap);
+
+  @include media("<=v-991"){
+   .form-control{
+     @include margin(bottom,15px);
+     
+   }
+
+   & .wl__form-group{
+     [class*="col-"]{
+       &:last-child{
+         .form-control{
+           margin-bottom:0;
+         }
+       }
+     }
+   }
+  }
 }
+

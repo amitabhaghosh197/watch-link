@@ -757,6 +757,927 @@ if ( jQuery.Callbacks ) {
 })( jQuery, window );
 
 /*!
+ * jQuery Mobile Events
+ * by Ben Major
+ *
+ * Copyright 2011-2017, Ben Major
+ * Licensed under the MIT License:
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
+ */
+
+"use strict";
+
+(function ($) {
+    $.attrFn = $.attrFn || {};
+
+    var touchCapable  = ('ontouchstart' in window),
+	
+        settings = {
+            tap_pixel_range: 5,
+            swipe_h_threshold: 50,
+            swipe_v_threshold: 50,
+            taphold_threshold: 750,
+            doubletap_int: 500,
+			shake_threshold: 15,
+
+            touch_capable: touchCapable,
+            orientation_support: ('orientation' in window && 'onorientationchange' in window),
+
+            startevent:  (touchCapable) ? 'touchstart' : 'mousedown',
+            endevent:    (touchCapable) ? 'touchend' : 'mouseup',
+            moveevent:   (touchCapable) ? 'touchmove' : 'mousemove',
+            tapevent:    (touchCapable) ? 'tap' : 'click',
+            scrollevent: (touchCapable) ? 'touchmove' : 'scroll',
+
+            hold_timer: null,
+            tap_timer: null
+        };
+    
+	// Declare touch namespace:
+	$.touch = { };
+	
+    // Convenience functions:
+    $.isTouchCapable = function() { return settings.touch_capable; };
+    $.getStartEvent  = function() { return settings.startevent;    };
+    $.getEndEvent    = function() { return settings.endevent;      };
+    $.getMoveEvent   = function() { return settings.moveevent;     };
+    $.getTapEvent    = function() { return settings.tapevent;      };
+    $.getScrollEvent = function() { return settings.scrollevent;   };
+    
+	// SETTERS:
+	// Set the X threshold of swipe events:
+	$.touch.setSwipeThresholdX = function( threshold ) {
+		if( typeof threshold !== 'number' ) { throw new Error('Threshold parameter must be a type of number'); }
+		settings.swipe_h_threshold = threshold;
+	};
+	
+	// Set the Y threshold of swipe events:
+	$.touch.setSwipeThresholdY = function( threshold ) {
+		if( typeof threshold !== 'number' ) { throw new Error('Threshold parameter must be a type of number'); }
+		settings.swipe_v_threshold = threshold;
+	};
+	
+	// Set the double tap interval:
+	$.touch.setDoubleTapInt    = function( interval ) {
+		if( typeof interval !== 'number' ) { throw new Error('Interval parameter must be a type of number'); }
+		settings.doubletap_int = interval;
+	};
+	
+	// Set the taphold threshold:
+	$.touch.setTapHoldThreshold = function( threshold ) {
+		if( typeof threshold !== 'number' ) { throw new Error('Threshold parameter must be a type of number'); }
+		settings.taphold_threshold = threshold;
+	};
+	
+	// Set the pixel range for tapas:
+	$.touch.setTapRange = function( range ) {
+		if( typeof range !== 'number' ) { throw new Error('Ranger parameter must be a type of number'); }
+		settings.tap_pixel_range = threshold;
+	};
+	
+    // Add Event shortcuts:
+    $.each(['tapstart', 'tapend', 'tapmove', 'tap', 'singletap', 'doubletap', 'taphold', 'swipe', 'swipeup', 'swiperight', 'swipedown', 'swipeleft', 'swipeend', 'scrollstart', 'scrollend', 'orientationchange', 'tap2', 'taphold2'], function (i, name) {
+        $.fn[name] = function (fn) {
+            return fn ? this.on(name, fn) : this.trigger(name);
+        };
+
+        $.attrFn[name] = true;
+    });
+
+    // tapstart Event:
+    $.event.special.tapstart = {
+        setup: function () {
+			
+            var thisObject = this,
+                $this = $(thisObject);
+			
+            $this.on(settings.startevent, function tapStartFunc(e) {
+				
+                $this.data('callee', tapStartFunc);
+                if (e.which && e.which !== 1) {
+                    return false;
+                }
+
+                var origEvent = e.originalEvent,
+                    touchData = {
+                        'position': {
+                            'x': ((settings.touch_capable) ? origEvent.touches[0].pageX : e.pageX),
+                            'y': (settings.touch_capable) ? origEvent.touches[0].pageY : e.pageY
+                        },
+                        'offset': {
+                            'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                            'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                        },
+                        'time': Date.now(),
+                        'target': e.target
+                    };
+				
+                triggerCustomEvent(thisObject, 'tapstart', e, touchData);
+                return true;
+            });
+        },
+
+        remove: function () {
+            $(this).off(settings.startevent, $(this).data.callee);
+        }
+    };
+	
+    // tapmove Event:
+    $.event.special.tapmove = {
+    	setup: function() {
+            var thisObject = this,
+            $this = $(thisObject);
+    			
+            $this.on(settings.moveevent, function tapMoveFunc(e) {
+                $this.data('callee', tapMoveFunc);
+    			
+                var origEvent = e.originalEvent,
+                    touchData = {
+                        'position': {
+                            'x': ((settings.touch_capable) ? origEvent.touches[0].pageX : e.pageX),
+                            'y': (settings.touch_capable) ? origEvent.touches[0].pageY : e.pageY
+                        },
+                        'offset': {
+                            'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+							'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                        },
+                        'time': Date.now(),
+                        'target': e.target
+                    };
+    				
+                triggerCustomEvent(thisObject, 'tapmove', e, touchData);
+                return true;
+            });
+        },
+        remove: function() {
+            $(this).off(settings.moveevent, $(this).data.callee);
+        }
+    };
+
+    // tapend Event:
+    $.event.special.tapend = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject);
+
+            $this.on(settings.endevent, function tapEndFunc(e) {
+                // Touch event data:
+                $this.data('callee', tapEndFunc);
+
+                var origEvent = e.originalEvent;
+                var touchData = {
+                    'position': {
+                        'x': (settings.touch_capable) ? origEvent.changedTouches[0].pageX : e.pageX,
+                        'y': (settings.touch_capable) ? origEvent.changedTouches[0].pageY : e.pageY
+                    },
+                    'offset': {
+                        'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                        'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                    },
+                    'time': Date.now(),
+                    'target': e.target
+                };
+                triggerCustomEvent(thisObject, 'tapend', e, touchData);
+                return true;
+            });
+        },
+        remove: function () {
+            $(this).off(settings.endevent, $(this).data.callee);
+        }
+    };
+
+    // taphold Event:
+    $.event.special.taphold = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject),
+                origTarget,
+                start_pos = {
+                    x: 0,
+                    y: 0
+                },
+                end_x = 0,
+                end_y = 0;
+
+            $this.on(settings.startevent, function tapHoldFunc1(e) {
+                if (e.which && e.which !== 1) {
+                    return false;
+                } else {
+                    $this.data('tapheld', false);
+                    origTarget = e.target;
+
+                    var origEvent = e.originalEvent;
+                    var start_time = Date.now(),
+                        startPosition = {
+                            'x': (settings.touch_capable) ? origEvent.touches[0].pageX : e.pageX,
+                            'y': (settings.touch_capable) ? origEvent.touches[0].pageY : e.pageY
+                        },
+                        startOffset = {
+                            'x': (settings.touch_capable) ? origEvent.touches[0].pageX - origEvent.touches[0].target.offsetLeft : e.offsetX,
+                            'y': (settings.touch_capable) ? origEvent.touches[0].pageY - origEvent.touches[0].target.offsetTop : e.offsetY
+                        };
+
+                    start_pos.x = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+                    start_pos.y = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageY : e.pageY;
+
+                    end_x = start_pos.x;
+                    end_y = start_pos.y;
+                    
+                    // Get the element's threshold:
+                    var ele_threshold = ($this.parent().data('threshold')) ? $this.parent().data('threshold') : $this.data('threshold'),
+                        threshold = (typeof ele_threshold !== 'undefined' && ele_threshold !== false && parseInt(ele_threshold)) ? parseInt(ele_threshold) : settings.taphold_threshold; 
+
+                    settings.hold_timer = window.setTimeout(function () {
+
+                        var diff_x = (start_pos.x - end_x),
+                            diff_y = (start_pos.y - end_y);
+
+                        if (e.target == origTarget && ((start_pos.x == end_x && start_pos.y == end_y) || (diff_x >= -(settings.tap_pixel_range) && diff_x <= settings.tap_pixel_range && diff_y >= -(settings.tap_pixel_range) && diff_y <= settings.tap_pixel_range))) {
+                            $this.data('tapheld', true);
+
+                            var end_time = Date.now();
+								
+                            var duration  = end_time - start_time,
+								touches   = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches : [ e ],
+								touchData = [ ];
+							
+							for( var i = 0; i < touches.length; i++)
+							{
+								var touch = {
+									'position': {
+										'x': (settings.touch_capable) ? origEvent.changedTouches[i].pageX : e.pageX,
+										'y': (settings.touch_capable) ? origEvent.changedTouches[i].pageY : e.pageY
+									},
+									'offset': {
+										'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[i].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+										'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[i].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+									},
+									'time': Date.now(),
+									'target': e.target,
+									'duration': duration
+								};
+								
+								touchData.push( touch );
+							}
+							
+							var evt_name = ( touches.length == 2 ) ? 'taphold2' : 'taphold';
+							
+							$this.data('callee1', tapHoldFunc1);
+							
+                            triggerCustomEvent(thisObject, evt_name, e, touchData);
+                        }
+                    }, threshold);
+
+                    return true;
+                }
+            }).on(settings.endevent, function tapHoldFunc2() {
+                $this.data('callee2', tapHoldFunc2);
+                $this.data('tapheld', false);
+                window.clearTimeout(settings.hold_timer);
+            })
+            .on(settings.moveevent, function tapHoldFunc3(e) {
+                $this.data('callee3', tapHoldFunc3);
+				
+                end_x = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+                end_y = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageY : e.pageY;
+            });
+        },
+
+        remove: function () {
+            $(this).off(settings.startevent, $(this).data.callee1).off(settings.endevent, $(this).data.callee2).off(settings.moveevent, $(this).data.callee3);
+        }
+    };
+
+    // doubletap Event:
+    $.event.special.doubletap = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject),
+                origTarget,
+                action,
+                firstTap = null,
+                origEvent,
+				cooloff,
+				cooling = false;
+
+            $this.on(settings.startevent, function doubleTapFunc1(e) {
+                if (e.which && e.which !== 1) {
+                    return false;
+                }
+                
+                $this.data('doubletapped', false);
+                origTarget = e.target;
+                $this.data('callee1', doubleTapFunc1);
+
+                origEvent = e.originalEvent;
+                if (!firstTap) {
+                    firstTap = {
+                        'position': {
+                            'x': (settings.touch_capable) ? origEvent.touches[0].pageX : e.pageX,
+                            'y': (settings.touch_capable) ? origEvent.touches[0].pageY : e.pageY
+                        },
+                        'offset': {
+                            'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                            'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                        },
+                        'time': Date.now(),
+                        'target': e.target,
+                        'element': e.originalEvent.srcElement,
+                        'index':   $(e.target).index()
+                    };
+                }
+
+                return true;
+            }).on(settings.endevent, function doubleTapFunc2(e) {
+				
+                var now = Date.now();
+                var lastTouch = $this.data('lastTouch') || now + 1;
+                var delta = now - lastTouch;
+                window.clearTimeout(action);
+                $this.data('callee2', doubleTapFunc2);
+
+                if (delta < settings.doubletap_int && ($(e.target).index() == firstTap.index) && delta > 100) {
+                    $this.data('doubletapped', true);
+                    window.clearTimeout(settings.tap_timer);
+
+                    // Now get the current event:
+                    var lastTap = {
+                        'position': {
+                            'x': (settings.touch_capable) ? e.originalEvent.changedTouches[0].pageX : e.pageX,
+                            'y': (settings.touch_capable) ? e.originalEvent.changedTouches[0].pageY : e.pageY
+                        },
+                        'offset': {
+                            'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                            'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                        },
+                        'time': Date.now(),
+                        'target': e.target,
+                        'element': e.originalEvent.srcElement,
+                        'index': $(e.target).index()
+                    };
+
+                    var touchData = {
+                        'firstTap': firstTap,
+                        'secondTap': lastTap,
+                        'interval': lastTap.time - firstTap.time
+                    };
+
+                    if (!cooling) {
+                    	triggerCustomEvent(thisObject, 'doubletap', e, touchData);
+                        firstTap = null;
+                    }
+                    
+                    cooling = true;
+                    
+                    cooloff = window.setTimeout(function () {
+                    	cooling = false;
+                    }, settings.doubletap_int);
+					
+                } else {
+                    $this.data('lastTouch', now);
+                    action = window.setTimeout(function () {
+                        firstTap = null;
+                        window.clearTimeout(action);
+                    }, settings.doubletap_int, [e]);
+                }
+                $this.data('lastTouch', now);
+            });
+        },
+        remove: function () {
+            $(this).off(settings.startevent, $(this).data.callee1).off(settings.endevent, $(this).data.callee2);
+        }
+    };
+
+    // singletap Event:
+    // This is used in conjuction with doubletap when both events are needed on the same element
+    $.event.special.singletap = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject),
+                origTarget = null,
+                startTime = null,
+                start_pos = {
+                    x: 0,
+                    y: 0
+                };
+
+            $this.on(settings.startevent, function singleTapFunc1(e) {
+                if (e.which && e.which !== 1) {
+                    return false;
+                } else {
+                    startTime = Date.now();
+                    origTarget = e.target;
+                    $this.data('callee1', singleTapFunc1);
+
+                    // Get the start x and y position:
+                    start_pos.x = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+                    start_pos.y = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageY : e.pageY;
+                    
+                    return true;
+                }
+            }).on(settings.endevent, function singleTapFunc2(e) {
+                $this.data('callee2', singleTapFunc2);
+                if (e.target == origTarget) {
+                    
+                    // Get the end point:
+                    var end_pos_x = (e.originalEvent.changedTouches) ? e.originalEvent.changedTouches[0].pageX : e.pageX,
+                        end_pos_y = (e.originalEvent.changedTouches) ? e.originalEvent.changedTouches[0].pageY : e.pageY;
+                    
+                    // We need to check if it was a taphold:
+
+                    settings.tap_timer = window.setTimeout(function () {
+                        
+                        var diff_x = (start_pos.x - end_pos_x), diff_y = (start_pos.y - end_pos_y);
+                        
+                        if(!$this.data('doubletapped') && !$this.data('tapheld') && (((start_pos.x == end_pos_x) && (start_pos.y == end_pos_y)) || (diff_x >= -(settings.tap_pixel_range) && diff_x <= settings.tap_pixel_range && diff_y >= -(settings.tap_pixel_range) && diff_y <= settings.tap_pixel_range))) {
+
+                            var origEvent = e.originalEvent;
+                            var touchData = {
+                                'position': {
+                                    'x': (settings.touch_capable) ? origEvent.changedTouches[0].pageX : e.pageX,
+                                    'y': (settings.touch_capable) ? origEvent.changedTouches[0].pageY : e.pageY
+                                },
+                                'offset': {
+                                    'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+									'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                                },
+                                'time': Date.now(),
+                                'target': e.target
+                            };
+                            
+                            // Was it a taphold?
+                            if((touchData.time - startTime) < settings.taphold_threshold)
+                            {
+                                triggerCustomEvent(thisObject, 'singletap', e, touchData);
+                            }
+                        }
+                    }, settings.doubletap_int);
+                }
+            });
+        },
+
+        remove: function () {
+            $(this).off(settings.startevent, $(this).data.callee1).off(settings.endevent, $(this).data.callee2);
+        }
+    };
+
+    // tap Event:
+    $.event.special.tap = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject),
+                started = false,
+                origTarget = null,
+                start_time,
+                start_pos = {
+                    x: 0,
+                    y: 0
+                },
+                touches;
+
+            $this.on(settings.startevent, function tapFunc1(e) {
+                $this.data('callee1', tapFunc1);
+
+                if( e.which && e.which !== 1 )
+				{
+                    return false;
+                }
+				else
+				{
+                    started = true;
+                    start_pos.x = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+                    start_pos.y = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageY : e.pageY;
+                    start_time = Date.now();
+                    origTarget = e.target;
+					
+                    touches = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches : [ e ];
+                    return true;
+                }
+            }).on(settings.endevent, function tapFunc2(e) {
+                $this.data('callee2', tapFunc2);
+
+                // Only trigger if they've started, and the target matches:
+                var end_x = (e.originalEvent.targetTouches) ? e.originalEvent.changedTouches[0].pageX : e.pageX,
+                    end_y = (e.originalEvent.targetTouches) ? e.originalEvent.changedTouches[0].pageY : e.pageY,
+                    diff_x = (start_pos.x - end_x),
+                    diff_y = (start_pos.y - end_y),
+                    eventName;
+					
+                if (origTarget == e.target && started && ((Date.now() - start_time) < settings.taphold_threshold) && ((start_pos.x == end_x && start_pos.y == end_y) || (diff_x >= -(settings.tap_pixel_range) && diff_x <= settings.tap_pixel_range && diff_y >= -(settings.tap_pixel_range) && diff_y <= settings.tap_pixel_range))) {
+                    var origEvent = e.originalEvent;
+                    var touchData = [ ];
+					
+                    for( var i = 0; i < touches.length; i++)
+                    {
+                        var touch = {
+                            'position': {
+                                'x': (settings.touch_capable) ? origEvent.changedTouches[i].pageX : e.pageX,
+                                'y': (settings.touch_capable) ? origEvent.changedTouches[i].pageY : e.pageY
+                            },
+                            'offset': {
+                                'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[i].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                                'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[i].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                            },
+                            'time': Date.now(),
+                            'target': e.target
+                        };
+                    	
+                        touchData.push( touch );
+                    }
+                    
+					var evt_name = ( touches.length == 2 ) ? 'tap2' : 'tap';
+					
+                    triggerCustomEvent(thisObject, evt_name, e, touchData);
+                }
+            });
+        },
+
+        remove: function () {
+            $(this).off(settings.startevent, $(this).data.callee1).off(settings.endevent, $(this).data.callee2);
+        }
+    };
+
+    // swipe Event (also handles swipeup, swiperight, swipedown and swipeleft):
+    $.event.special.swipe = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject),
+                started = false,
+                hasSwiped = false,
+                originalCoord = {
+                    x: 0,
+                    y: 0
+                },
+                finalCoord = {
+                    x: 0,
+                    y: 0
+                },
+                startEvnt;
+
+            // Screen touched, store the original coordinate
+
+            function touchStart(e) {
+                $this = $(e.currentTarget);
+                $this.data('callee1', touchStart);
+                originalCoord.x = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+                originalCoord.y = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageY : e.pageY;
+                finalCoord.x = originalCoord.x;
+                finalCoord.y = originalCoord.y;
+                started = true;
+                var origEvent = e.originalEvent;
+                // Read event data into our startEvt:
+                startEvnt = {
+                    'position': {
+                        'x': (settings.touch_capable) ? origEvent.touches[0].pageX : e.pageX,
+                        'y': (settings.touch_capable) ? origEvent.touches[0].pageY : e.pageY
+                    },
+                    'offset': {
+                        'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                        'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                    },
+                    'time': Date.now(),
+                    'target': e.target
+                };
+            }
+
+            // Store coordinates as finger is swiping
+
+            function touchMove(e) {
+                $this = $(e.currentTarget);
+                $this.data('callee2', touchMove);
+                finalCoord.x = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageX : e.pageX;
+                finalCoord.y = (e.originalEvent.targetTouches) ? e.originalEvent.targetTouches[0].pageY : e.pageY;
+
+                var swipedir;
+
+                // We need to check if the element to which the event was bound contains a data-xthreshold | data-vthreshold:
+                var ele_x_threshold = ($this.parent().data('xthreshold')) ? $this.parent().data('xthreshold') : $this.data('xthreshold'),
+                    ele_y_threshold = ($this.parent().data('ythreshold')) ? $this.parent().data('ythreshold') : $this.data('ythreshold'),
+                    h_threshold = (typeof ele_x_threshold !== 'undefined' && ele_x_threshold !== false && parseInt(ele_x_threshold)) ? parseInt(ele_x_threshold) : settings.swipe_h_threshold,
+                    v_threshold = (typeof ele_y_threshold !== 'undefined' && ele_y_threshold !== false && parseInt(ele_y_threshold)) ? parseInt(ele_y_threshold) : settings.swipe_v_threshold; 
+                
+                if (originalCoord.y > finalCoord.y && (originalCoord.y - finalCoord.y > v_threshold)) {
+                    swipedir = 'swipeup';
+                }
+                if (originalCoord.x < finalCoord.x && (finalCoord.x - originalCoord.x > h_threshold)) {
+                    swipedir = 'swiperight';
+                }
+                if (originalCoord.y < finalCoord.y && (finalCoord.y - originalCoord.y > v_threshold)) {
+                    swipedir = 'swipedown';
+                }
+                if (originalCoord.x > finalCoord.x && (originalCoord.x - finalCoord.x > h_threshold)) {
+                    swipedir = 'swipeleft';
+                }
+                if (swipedir != undefined && started) {
+                    originalCoord.x = 0;
+                    originalCoord.y = 0;
+                    finalCoord.x = 0;
+                    finalCoord.y = 0;
+                    started = false;
+
+                    // Read event data into our endEvnt:
+                    var origEvent = e.originalEvent;
+                    var endEvnt = {
+                        'position': {
+                            'x': (settings.touch_capable) ? origEvent.touches[0].pageX : e.pageX,
+                            'y': (settings.touch_capable) ? origEvent.touches[0].pageY : e.pageY
+                        },
+                        'offset': {
+                            'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                            'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                        },
+                        'time': Date.now(),
+                        'target': e.target
+                    };
+
+                    // Calculate the swipe amount (normalized):
+                    var xAmount = Math.abs(startEvnt.position.x - endEvnt.position.x),
+                        yAmount = Math.abs(startEvnt.position.y - endEvnt.position.y);
+
+                    var touchData = {
+                        'startEvnt': startEvnt,
+                        'endEvnt': endEvnt,
+                        'direction': swipedir.replace('swipe', ''),
+                        'xAmount': xAmount,
+                        'yAmount': yAmount,
+                        'duration': endEvnt.time - startEvnt.time
+                    };
+                    hasSwiped = true;
+                    $this.trigger('swipe', touchData).trigger(swipedir, touchData);
+                }
+            }
+
+            function touchEnd(e) {
+                $this = $(e.currentTarget);
+                var swipedir = "";
+                $this.data('callee3', touchEnd);
+                if (hasSwiped) {
+                    // We need to check if the element to which the event was bound contains a data-xthreshold | data-vthreshold:
+                    var ele_x_threshold = $this.data('xthreshold'),
+                        ele_y_threshold = $this.data('ythreshold'),
+                        h_threshold = (typeof ele_x_threshold !== 'undefined' && ele_x_threshold !== false && parseInt(ele_x_threshold)) ? parseInt(ele_x_threshold) : settings.swipe_h_threshold,
+                        v_threshold = (typeof ele_y_threshold !== 'undefined' && ele_y_threshold !== false && parseInt(ele_y_threshold)) ? parseInt(ele_y_threshold) : settings.swipe_v_threshold;
+
+                    var origEvent = e.originalEvent;
+                    var endEvnt = {
+                        'position': {
+                            'x': (settings.touch_capable) ? origEvent.changedTouches[0].pageX : e.pageX,
+                            'y': (settings.touch_capable) ? origEvent.changedTouches[0].pageY : e.pageY
+                        },
+                        'offset': {
+                            'x': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageX - ($this.offset() ? $this.offset().left : 0)) : Math.round(e.pageX - ($this.offset() ? $this.offset().left : 0)),
+                            'y': (settings.touch_capable) ? Math.round(origEvent.changedTouches[0].pageY - ($this.offset() ? $this.offset().top : 0)) : Math.round(e.pageY - ($this.offset() ? $this.offset().top : 0))
+                        },
+                        'time': Date.now(),
+                        'target': e.target
+                    };
+
+                    // Read event data into our endEvnt:
+                    if (startEvnt.position.y > endEvnt.position.y && (startEvnt.position.y - endEvnt.position.y > v_threshold)) {
+                        swipedir = 'swipeup';
+                    }
+                    if (startEvnt.position.x < endEvnt.position.x && (endEvnt.position.x - startEvnt.position.x > h_threshold)) {
+                        swipedir = 'swiperight';
+                    }
+                    if (startEvnt.position.y < endEvnt.position.y && (endEvnt.position.y - startEvnt.position.y > v_threshold)) {
+                        swipedir = 'swipedown';
+                    }
+                    if (startEvnt.position.x > endEvnt.position.x && (startEvnt.position.x - endEvnt.position.x > h_threshold)) {
+                        swipedir = 'swipeleft';
+                    }
+
+                    // Calculate the swipe amount (normalized):
+                    var xAmount = Math.abs(startEvnt.position.x - endEvnt.position.x),
+                        yAmount = Math.abs(startEvnt.position.y - endEvnt.position.y);
+
+                    var touchData = {
+                        'startEvnt': startEvnt,
+                        'endEvnt': endEvnt,
+                        'direction': swipedir.replace('swipe', ''),
+                        'xAmount': xAmount,
+                        'yAmount': yAmount,
+                        'duration': endEvnt.time - startEvnt.time
+                    };
+                    $this.trigger('swipeend', touchData);
+                }
+
+                started = false;
+                hasSwiped = false;
+            }
+
+            $this.on(settings.startevent, touchStart);
+            $this.on(settings.moveevent, touchMove);
+            $this.on(settings.endevent, touchEnd);
+        },
+
+        remove: function () {
+            $(this).off(settings.startevent, $(this).data.callee1).off(settings.moveevent, $(this).data.callee2).off(settings.endevent, $(this).data.callee3);
+        }
+    };
+
+    // scrollstart Event (also handles scrollend):
+    $.event.special.scrollstart = {
+        setup: function () {
+            var thisObject = this,
+                $this = $(thisObject),
+                scrolling,
+                timer;
+
+            function trigger(event, state) {
+                scrolling = state;
+                triggerCustomEvent(thisObject, scrolling ? 'scrollstart' : 'scrollend', event);
+            }
+
+            // iPhone triggers scroll after a small delay; use touchmove instead
+            $this.on(settings.scrollevent, function scrollFunc(event) {
+                $this.data('callee', scrollFunc);
+
+                if (!scrolling) {
+                    trigger(event, true);
+                }
+
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    trigger(event, false);
+                }, 50);
+            });
+        },
+
+        remove: function () {
+            $(this).off(settings.scrollevent, $(this).data.callee);
+        }
+    };
+
+    // This is the orientation change (largely borrowed from jQuery Mobile):
+    var win = $(window),
+        special_event,
+        get_orientation,
+        last_orientation,
+        initial_orientation_is_landscape,
+        initial_orientation_is_default,
+        portrait_map = {
+            '0': true,
+            '180': true
+        };
+
+    if (settings.orientation_support) {
+        var ww = window.innerWidth || win.width(),
+            wh = window.innerHeight || win.height(),
+            landscape_threshold = 50;
+
+        initial_orientation_is_landscape = ww > wh && (ww - wh) > landscape_threshold;
+        initial_orientation_is_default = portrait_map[window.orientation];
+
+        if ((initial_orientation_is_landscape && initial_orientation_is_default) || (!initial_orientation_is_landscape && !initial_orientation_is_default)) {
+            portrait_map = {
+                '-90': true,
+                '90': true
+            };
+        }
+    }
+
+    $.event.special.orientationchange = special_event = {
+        setup: function () {
+            // If the event is supported natively, return false so that jQuery
+            // will on to the event using DOM methods.
+            if (settings.orientation_support) {
+                return false;
+            }
+
+            // Get the current orientation to avoid initial double-triggering.
+            last_orientation = get_orientation();
+
+            win.on('throttledresize', handler);
+            return true;
+        },
+        teardown: function () {
+            if (settings.orientation_support) {
+                return false;
+            }
+
+            win.off('throttledresize', handler);
+            return true;
+        },
+        add: function (handleObj) {
+            // Save a reference to the bound event handler.
+            var old_handler = handleObj.handler;
+
+            handleObj.handler = function (event) {
+                event.orientation = get_orientation();
+                return old_handler.apply(this, arguments);
+            };
+        }
+    };
+
+    // If the event is not supported natively, this handler will be bound to
+    // the window resize event to simulate the orientationchange event.
+
+    function handler() {
+        // Get the current orientation.
+        var orientation = get_orientation();
+
+        if (orientation !== last_orientation) {
+            // The orientation has changed, so trigger the orientationchange event.
+            last_orientation = orientation;
+            win.trigger("orientationchange");
+        }
+    }
+
+    $.event.special.orientationchange.orientation = get_orientation = function () {
+        var isPortrait = true,
+            elem = document.documentElement;
+
+        if (settings.orientation_support) {
+            isPortrait = portrait_map[window.orientation];
+        } else {
+            isPortrait = elem && elem.clientWidth / elem.clientHeight < 1.1;
+        }
+
+        return isPortrait ? 'portrait' : 'landscape';
+    };
+
+    // throttle Handler:
+    $.event.special.throttledresize = {
+        setup: function () {
+            $(this).on('resize', throttle_handler);
+        },
+        teardown: function () {
+            $(this).off('resize', throttle_handler);
+        }
+    };
+
+    var throttle = 250,
+        throttle_handler = function () {
+            curr = Date.now();
+            diff = curr - lastCall;
+
+            if (diff >= throttle) {
+                lastCall = curr;
+                $(this).trigger('throttledresize');
+
+            } else {
+                if (heldCall) {
+                    window.clearTimeout(heldCall);
+                }
+
+                // Promise a held call will still execute
+                heldCall = window.setTimeout(handler, throttle - diff);
+            }
+        },
+        lastCall = 0,
+        heldCall,
+        curr,
+        diff;
+
+    // Trigger a custom event:
+
+    function triggerCustomEvent(obj, eventType, event, touchData) {
+        var originalType = event.type;
+        event.type = eventType;
+
+        $.event.dispatch.call(obj, event, touchData);
+        event.type = originalType;
+    }
+
+    // Correctly on anything we've overloaded:
+    $.each({
+        scrollend: 'scrollstart',
+        swipeup: 'swipe',
+        swiperight: 'swipe',
+        swipedown: 'swipe',
+        swipeleft: 'swipe',
+        swipeend: 'swipe',
+		tap2:     'tap',
+		taphold2: 'taphold'
+    }, function (e, srcE) {
+        $.event.special[e] = {
+            setup: function () {
+                $(this).on(srcE, $.noop);
+            }
+        };
+    });
+
+}(jQuery));
+
+/*!
   * Bootstrap v4.1.0 (https://getbootstrap.com/)
   * Copyright 2011-2018 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -770,6 +1691,7 @@ if ( jQuery.Callbacks ) {
  */
 
 !function(a,b,c){var d=window.matchMedia;"undefined"!=typeof module&&module.exports?module.exports=c(d):"function"==typeof define&&define.amd?define(function(){return b[a]=c(d)}):b[a]=c(d)}("enquire",this,function(a){"use strict";function b(a,b){var c,d=0,e=a.length;for(d;e>d&&(c=b(a[d],d),c!==!1);d++);}function c(a){return"[object Array]"===Object.prototype.toString.apply(a)}function d(a){return"function"==typeof a}function e(a){this.options=a,!a.deferSetup&&this.setup()}function f(b,c){this.query=b,this.isUnconditional=c,this.handlers=[],this.mql=a(b);var d=this;this.listener=function(a){d.mql=a,d.assess()},this.mql.addListener(this.listener)}function g(){if(!a)throw new Error("matchMedia not present, legacy browsers require a polyfill");this.queries={},this.browserIsIncapable=!a("only all").matches}return e.prototype={setup:function(){this.options.setup&&this.options.setup(),this.initialised=!0},on:function(){!this.initialised&&this.setup(),this.options.match&&this.options.match()},off:function(){this.options.unmatch&&this.options.unmatch()},destroy:function(){this.options.destroy?this.options.destroy():this.off()},equals:function(a){return this.options===a||this.options.match===a}},f.prototype={addHandler:function(a){var b=new e(a);this.handlers.push(b),this.matches()&&b.on()},removeHandler:function(a){var c=this.handlers;b(c,function(b,d){return b.equals(a)?(b.destroy(),!c.splice(d,1)):void 0})},matches:function(){return this.mql.matches||this.isUnconditional},clear:function(){b(this.handlers,function(a){a.destroy()}),this.mql.removeListener(this.listener),this.handlers.length=0},assess:function(){var a=this.matches()?"on":"off";b(this.handlers,function(b){b[a]()})}},g.prototype={register:function(a,e,g){var h=this.queries,i=g&&this.browserIsIncapable;return h[a]||(h[a]=new f(a,i)),d(e)&&(e={match:e}),c(e)||(e=[e]),b(e,function(b){d(b)&&(b={match:b}),h[a].addHandler(b)}),this},unregister:function(a,b){var c=this.queries[a];return c&&(b?c.removeHandler(b):(c.clear(),delete this.queries[a])),this}},new g});
+!function(a){var b=/iPhone/i,c=/iPod/i,d=/iPad/i,e=/(?=.*\bAndroid\b)(?=.*\bMobile\b)/i,f=/Android/i,g=/(?=.*\bAndroid\b)(?=.*\bSD4930UR\b)/i,h=/(?=.*\bAndroid\b)(?=.*\b(?:KFOT|KFTT|KFJWI|KFJWA|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|KFARWI|KFASWI|KFSAWI|KFSAWA)\b)/i,i=/IEMobile/i,j=/(?=.*\bWindows\b)(?=.*\bARM\b)/i,k=/BlackBerry/i,l=/BB10/i,m=/Opera Mini/i,n=/(CriOS|Chrome)(?=.*\bMobile\b)/i,o=/(?=.*\bFirefox\b)(?=.*\bMobile\b)/i,p=new RegExp("(?:Nexus 7|BNTV250|Kindle Fire|Silk|GT-P1000)","i"),q=function(a,b){return a.test(b)},r=function(a){var r=a||navigator.userAgent,s=r.split("[FBAN");return"undefined"!=typeof s[1]&&(r=s[0]),s=r.split("Twitter"),"undefined"!=typeof s[1]&&(r=s[0]),this.apple={phone:q(b,r),ipod:q(c,r),tablet:!q(b,r)&&q(d,r),device:q(b,r)||q(c,r)||q(d,r)},this.amazon={phone:q(g,r),tablet:!q(g,r)&&q(h,r),device:q(g,r)||q(h,r)},this.android={phone:q(g,r)||q(e,r),tablet:!q(g,r)&&!q(e,r)&&(q(h,r)||q(f,r)),device:q(g,r)||q(h,r)||q(e,r)||q(f,r)},this.windows={phone:q(i,r),tablet:q(j,r),device:q(i,r)||q(j,r)},this.other={blackberry:q(k,r),blackberry10:q(l,r),opera:q(m,r),firefox:q(o,r),chrome:q(n,r),device:q(k,r)||q(l,r)||q(m,r)||q(o,r)||q(n,r)},this.seven_inch=q(p,r),this.any=this.apple.device||this.android.device||this.windows.device||this.other.device||this.seven_inch,this.phone=this.apple.phone||this.android.phone||this.windows.phone,this.tablet=this.apple.tablet||this.android.tablet||this.windows.tablet,"undefined"==typeof window?this:void 0},s=function(){var a=new r;return a.Class=r,a};"undefined"!=typeof module&&module.exports&&"undefined"==typeof window?module.exports=r:"undefined"!=typeof module&&module.exports&&"undefined"!=typeof window?module.exports=s():"function"==typeof define&&define.amd?define("isMobile",[],a.isMobile=s()):a.isMobile=s()}(this);
 /*! calc-polyfill 25-01-2016 */
 !function(win,doc){"use strict";function contentLoaded(a,b){var c=!1,d=!0,e=a.document,f=e.documentElement,g=e.addEventListener,h=g?"addEventListener":"attachEvent",i=g?"removeEventListener":"detachEvent",j=g?"":"on",k=function(d){("readystatechange"!=d.type||"complete"==e.readyState)&&(("load"==d.type?a:e)[i](j+d.type,k,!1),!c&&(c=!0)&&b.call(a,d.type||d))},l=function(){try{f.doScroll("left")}catch(a){return void setTimeout(l,50)}k("poll")};if("complete"==e.readyState)b.call(a,"lazy");else{if(!g&&f.doScroll){try{d=!a.frameElement}catch(m){}d&&l()}e[h](j+"DOMContentLoaded",k,!1),e[h](j+"readystatechange",k,!1),a[h](j+"load",k,!1)}}if(function(){for(var a,b=function(){},c=["assert","clear","count","debug","dir","dirxml","error","exception","group","groupCollapsed","groupEnd","info","log","markTimeline","profile","profileEnd","table","time","timeEnd","timeline","timelineEnd","timeStamp","trace","warn"],d=c.length,e=window.console=window.console||{};d--;)a=c[d],e[a]||(e[a]=b)}(),!doc.querySelectorAll)return!1;var EMPTY="",CALC_RULE="^(\\s*?[\\s\\S]*):(\\s*?[\\s\\S]*?((\\-(webkit|moz)\\-)?calc\\(([\\s\\S]+)\\))[\\s\\S]*)?$",CSSRULES="((\\s*?@media[\\s\\S]*?){([\\s\\S]*?)}\\s*?})|(([\\s\\S]*?){([\\s\\S]*?)})",KEYFRAMES=new RegExp("((@(-webkit-)?keyframes [\\s\\S]*?){([\\s\\S]*?}\\s*?)})","gi"),FONTFACE=new RegExp("((@font-face\\s*?){([\\s\\S]*?)})","gi"),COMMENTS=new RegExp("(\\/\\*[\\s\\S]*?\\*\\/)","gi"),IMPORTS=new RegExp("@import .*?;","gi"),CHARSET=new RegExp("@charset .*?;","gi"),PERCENT=/[\d\.]+%/,PT=/\d+pt/,PIXEL=/(\d+)px/g,REMEM=/[\d\.]+r?em/,REM=/[\d\.]+rem/,EM=/[\d\.]+em/,MATH_EXP=/[\+\-\/\*]?[\d\.]+(px|%|em|rem)?/g,PLACEHOLDER="$1",ONLYNUMBERS=/[\s\-0-9]/g,FONTSIZE="font-size",ADDMEDIA="@media",onTextResize=[],onWindowResize=[],cssTexts=[],docLoaded=!1,utilities={camelize:function(a){return a.replace(/\-(\w)/g,function(a,b){return b.toUpperCase()})},trim:function(a){var b=/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;return String.prototype.trim?a.trim():a.replace(b,"")},indexOf:function(a,b,c){var d=a.length>>>0;for(c=Number(c)||0,c=0>c?Math.ceil(c):Math.floor(c),0>c&&(c+=d);d>c;c++)if(c in a&&a[c]===b)return c;return-1},getStyle:function(a,b){return a.currentStyle?a.currentStyle[utilities.camelize(b)]:doc.defaultView&&doc.defaultView.getComputedStyle?doc.defaultView.getComputedStyle(a,null).getPropertyValue(b):a.style[utilities.camelize(b)]},getFontsize:function(a){var b,c=doc.createElement("span");return c.innerHTML="&nbsp;",c.style.position="absolute",c.style.lineHeight="1em",c.style.fontSize="1em",a.appendChild(c),b=c.offsetHeight,a.removeChild(c),b},addEvent:function(a,b,c){doc.addEventListener?a.addEventListener(b,c,!1):a.attachEvent("on"+b,c)},textResize:function(a){var b,c,d=function(){b=doc.createElement("span"),b.id="text-resize-control",b.innerHTML="&nbsp;",b.style.position="absolute",b.style.left="-9999px",b.style.lineHeight="1em",b.style.fontSize="1em",doc.body.insertBefore(b,doc.body.firstChild),c=b.offsetHeight},e=function(){var d=b.offsetHeight;return c===d?(win.requestAnimationFrame(e),!1):(c=d,a&&"function"==typeof a&&a(),void win.requestAnimationFrame(e))};d(),win.requestAnimationFrame(e)}},calcTest=function(){var a=document.createElement("div");return a.style.cssText="width: -moz-calc(10px); width: -webkit-calc(10px); width: calc(10px)",!!a.style.length},getStyleSheets=function(){for(var a,b=[],c=0,d=doc.styleSheets.length;d>c;c++)a=doc.styleSheets[c],cssTexts[c]="",a.href&&a.href!==EMPTY?a.rawCssText&&a.rawCssText!==EMPTY?cssTexts[c]=a.rawCssText:b.push(a.href):a.ownerNode&&"style"===a.ownerNode.nodeName.toLowerCase()&&(cssTexts[c]=a.ownerNode.textContent);(b.length>0||cssTexts.length>0)&&loadStylesheets(b)},loadStylesheets=function(a){var b,c=0,d=a.length;if(win.XMLHttpRequest)b=new XMLHttpRequest;else try{b=new ActiveXObject("Microsoft.XMLHTTP")}catch(e){b=null}if(b)for(;d>c;c++)try{b.open("GET",a[c],!1),b.send(),200===b.status&&(cssTexts[c]=b.responseText)}catch(e){console.log("Error making request for file "+a[c]+": "+e.message)}cssTexts.length>0&&parseStylesheets(cssTexts)},parseStylesheets=function(a){for(var b=0,c=a.length;c>b;b++)a[b].length&&(a[b]=a[b].replace(COMMENTS,EMPTY).replace(CHARSET,EMPTY).replace(IMPORTS,EMPTY).replace(KEYFRAMES,EMPTY).replace(FONTFACE,EMPTY),dotheCalc(parseCSS(a[b])))},removeStyles=function(a){for(var b=0,c=a.length;c>b;b++)JSON.parse(a[b].getAttribute("data-calced"))||a[b].removeAttribute("style")},parseCSS=function(a,b){var c,d,e,f,g,h,i,j,k,l=[];for(b=b||"",e=new RegExp(CSSRULES,"gi");;){if(f=e.exec(a),null===f)break;if(g=utilities.trim((f[2]||f[5]).split("\r\n").join("\n")),-1!==g.indexOf(ADDMEDIA))h=f[3]+"\n}",l=l.concat(parseCSS(h,g.replace(ADDMEDIA,"")));else for(h=f[6].split("\r\n").join("\n").split(";"),c=0,d=h.length;d>c;c++){i=new RegExp(CALC_RULE,"gi").exec(h[c]);try{j=doc.querySelectorAll(g)}catch(m){console.log('Error trying to select "'+g+'": '+m.message);break}null!==i&&j.length&&(k={elements:j,media:b,values:utilities.trim(i[2]),formula:i[6],prop:utilities.trim(i[1]),placholder:utilities.trim(i[3])},k.formula.match(PERCENT)&&(k.onresize=!0),k.formula.match(REMEM)&&(k.ontextresize=!0),l.push(k))}}return l},dotheCalc=function(calcRules){for(var index=0,len=calcRules.length,obj,calc=function(obj){for(var i=0,len=obj.elements.length,refValue,modifier,matches,l,j,result,formula;len>i;i++){for(formula=obj.formula.replace(PIXEL,PLACEHOLDER),matches=formula.match(MATH_EXP),l=matches.length,j=0;l>j;j++)modifier=null,matches[j].match(PERCENT)&&(refValue=obj.elements[i].parentNode.clientWidth,modifier=parseFloat(matches[j],10)/100),matches[j].match(EM)&&(refValue=obj.elements[i].currentStyle?utilities.getFontsize(obj.elements[i]):parseInt(utilities.getStyle(obj.elements[i],FONTSIZE).replace(/px/,EMPTY),10),refValue.match&&refValue.match(PT)&&(refValue=Math.round(1.333333333*parseInt(refValue.replace(/pt/,""),10))),modifier=parseFloat(matches[j],10)),matches[j].match(REM)&&(refValue=utilities.getStyle(doc.body,FONTSIZE).match(PERCENT)?16*parseInt(utilities.getStyle(doc.body,FONTSIZE).replace(/%/,EMPTY),10)/100:utilities.getStyle(doc.body,FONTSIZE).match(PT)?Math.round(1.333333333*parseInt(utilities.getStyle(doc.body,FONTSIZE).replace(/pt/,""),10)):parseInt(utilities.getStyle(doc.body,FONTSIZE).replace(/px/,EMPTY),10),modifier=parseFloat(matches[j],10)),modifier&&(formula=formula.replace(matches[j],refValue*modifier));try{formula.match(ONLYNUMBERS)&&(result=eval(formula),obj.elements[i].style[utilities.trim(utilities.camelize(obj.prop))]=obj.values.replace(obj.placholder,result+"px"),obj.elements[i].setAttribute("data-calced",!0))}catch(e){}}};len>index;index++)obj=calcRules[index],obj.onresize&&-1===utilities.indexOf(onWindowResize,obj)&&onWindowResize.push(obj),obj.ontextresize&&-1===utilities.indexOf(onTextResize,obj)&&onTextResize.push(obj),obj.media!==EMPTY?win.matchMedia&&win.matchMedia(obj.media).matches?calc(obj):removeStyles(obj.elements):calc(obj)};win.dotheCalc=function(){cssTexts.length>0&&docLoaded&&parseStylesheets(cssTexts)},contentLoaded(win,function(){calcTest()||(docLoaded=!0,getStyleSheets(),onTextResize.length>0&&utilities.textResize(function(){dotheCalc(onTextResize)}),onWindowResize.length>0&&utilities.addEvent(win,"resize",function(){dotheCalc(onWindowResize)}))}),function(a){!function(){if(!a.requestAnimationFrame){a.webkitRequestAnimationFrame&&(a.requestAnimationFrame=a.webkitRequestAnimationFrame,a.cancelAnimationFrame=a.webkitCancelAnimationFrame||a.webkitCancelRequestAnimationFrame);var b=0;a.requestAnimationFrame=function(c){var d=(new Date).getTime(),e=Math.max(0,16-(d-b)),f=a.setTimeout(function(){c(d+e)},e);return b=d+e,f},a.cancelAnimationFrame=function(a){clearTimeout(a)}}}(),"function"==typeof define&&define(function(){return a.requestAnimationFrame})}(window)}(window,document);
 /*!
@@ -2060,6 +2982,22 @@ c.getScrollLeft():z.call(h)},set:function(h,c){var k=f.data(h,"__nicescroll")||!
 this.each=function(d){f.each(c,d);return c};this.push=function(d){c[c.length]=d;c.length++};this.eq=function(d){return c[d]};if(h)for(var k=0;k<h.length;k++){var l=f.data(h[k],"__nicescroll")||!1;l&&(this[this.length]=l,this.length++)}return this};(function(f,c,k){for(var l=0;l<c.length;l++)k(f,c[l])})(E.prototype,"show hide toggle onResize resize remove stop doScrollPos".split(" "),function(f,c){f[c]=function(){var f=arguments;return this.each(function(){this[c].apply(this,f)})}});f.fn.getNiceScroll=
 function(h){return void 0===h?new E(this):this[h]&&f.data(this[h],"__nicescroll")||!1};f.expr[":"].nicescroll=function(h){return void 0!==f.data(h,"__nicescroll")};f.fn.niceScroll=function(h,c){void 0!==c||"object"!=typeof h||"jquery"in h||(c=h,h=!1);c=f.extend({},c);var k=new E;void 0===c&&(c={});h&&(c.doc=f(h),c.win=f(this));var l=!("doc"in c);l||"win"in c||(c.win=f(this));this.each(function(){var d=f(this).data("__nicescroll")||!1;d||(c.doc=l?f(this):c.doc,d=new S(c,f(this)),f(this).data("__nicescroll",
 d));k.push(d)});return 1==k.length?k[0]:k};window.NiceScroll={getjQuery:function(){return f}};f.nicescroll||(f.nicescroll=new E,f.nicescroll.options=K)});
+/*! Copyright (c) 2011 Piotr Rochala (http://rocha.la)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ *
+ * Version: 1.3.8
+ *
+ */
+(function(e){e.fn.extend({slimScroll:function(f){var a=e.extend({width:"auto",height:"250px",size:"7px",color:"#000",position:"right",distance:"1px",start:"top",opacity:.4,alwaysVisible:!1,disableFadeOut:!1,railVisible:!1,railColor:"#333",railOpacity:.2,railDraggable:!0,railClass:"slimScrollRail",barClass:"slimScrollBar",wrapperClass:"slimScrollDiv",allowPageScroll:!1,wheelStep:20,touchScrollStep:200,borderRadius:"7px",railBorderRadius:"7px"},f);this.each(function(){function v(d){if(r){d=d||window.event;
+var c=0;d.wheelDelta&&(c=-d.wheelDelta/120);d.detail&&(c=d.detail/3);e(d.target||d.srcTarget||d.srcElement).closest("."+a.wrapperClass).is(b.parent())&&n(c,!0);d.preventDefault&&!k&&d.preventDefault();k||(d.returnValue=!1)}}function n(d,g,e){k=!1;var f=b.outerHeight()-c.outerHeight();g&&(g=parseInt(c.css("top"))+d*parseInt(a.wheelStep)/100*c.outerHeight(),g=Math.min(Math.max(g,0),f),g=0<d?Math.ceil(g):Math.floor(g),c.css({top:g+"px"}));l=parseInt(c.css("top"))/(b.outerHeight()-c.outerHeight());g=
+l*(b[0].scrollHeight-b.outerHeight());e&&(g=d,d=g/b[0].scrollHeight*b.outerHeight(),d=Math.min(Math.max(d,0),f),c.css({top:d+"px"}));b.scrollTop(g);b.trigger("slimscrolling",~~g);w();p()}function x(){u=Math.max(b.outerHeight()/b[0].scrollHeight*b.outerHeight(),30);c.css({height:u+"px"});var a=u==b.outerHeight()?"none":"block";c.css({display:a})}function w(){x();clearTimeout(B);l==~~l?(k=a.allowPageScroll,C!=l&&b.trigger("slimscroll",0==~~l?"top":"bottom")):k=!1;C=l;u>=b.outerHeight()?k=!0:(c.stop(!0,
+!0).fadeIn("fast"),a.railVisible&&m.stop(!0,!0).fadeIn("fast"))}function p(){a.alwaysVisible||(B=setTimeout(function(){a.disableFadeOut&&r||y||z||(c.fadeOut("slow"),m.fadeOut("slow"))},1E3))}var r,y,z,B,A,u,l,C,k=!1,b=e(this);if(b.parent().hasClass(a.wrapperClass)){var q=b.scrollTop(),c=b.siblings("."+a.barClass),m=b.siblings("."+a.railClass);x();if(e.isPlainObject(f)){if("height"in f&&"auto"==f.height){b.parent().css("height","auto");b.css("height","auto");var h=b.parent().parent().height();b.parent().css("height",
+h);b.css("height",h)}else"height"in f&&(h=f.height,b.parent().css("height",h),b.css("height",h));if("scrollTo"in f)q=parseInt(a.scrollTo);else if("scrollBy"in f)q+=parseInt(a.scrollBy);else if("destroy"in f){c.remove();m.remove();b.unwrap();return}n(q,!1,!0)}}else if(!(e.isPlainObject(f)&&"destroy"in f)){a.height="auto"==a.height?b.parent().height():a.height;q=e("<div></div>").addClass(a.wrapperClass).css({position:"relative",overflow:"hidden",width:a.width,height:a.height});b.css({overflow:"hidden",
+width:a.width,height:a.height});var m=e("<div></div>").addClass(a.railClass).css({width:a.size,height:"100%",position:"absolute",top:0,display:a.alwaysVisible&&a.railVisible?"block":"none","border-radius":a.railBorderRadius,background:a.railColor,opacity:a.railOpacity,zIndex:90}),c=e("<div></div>").addClass(a.barClass).css({background:a.color,width:a.size,position:"absolute",top:0,opacity:a.opacity,display:a.alwaysVisible?"block":"none","border-radius":a.borderRadius,BorderRadius:a.borderRadius,MozBorderRadius:a.borderRadius,
+WebkitBorderRadius:a.borderRadius,zIndex:99}),h="right"==a.position?{right:a.distance}:{left:a.distance};m.css(h);c.css(h);b.wrap(q);b.parent().append(c);b.parent().append(m);a.railDraggable&&c.bind("mousedown",function(a){var b=e(document);z=!0;t=parseFloat(c.css("top"));pageY=a.pageY;b.bind("mousemove.slimscroll",function(a){currTop=t+a.pageY-pageY;c.css("top",currTop);n(0,c.position().top,!1)});b.bind("mouseup.slimscroll",function(a){z=!1;p();b.unbind(".slimscroll")});return!1}).bind("selectstart.slimscroll",
+function(a){a.stopPropagation();a.preventDefault();return!1});m.hover(function(){w()},function(){p()});c.hover(function(){y=!0},function(){y=!1});b.hover(function(){r=!0;w();p()},function(){r=!1;p()});b.bind("touchstart",function(a,b){a.originalEvent.touches.length&&(A=a.originalEvent.touches[0].pageY)});b.bind("touchmove",function(b){k||b.originalEvent.preventDefault();b.originalEvent.touches.length&&(n((A-b.originalEvent.touches[0].pageY)/a.touchScrollStep,!0),A=b.originalEvent.touches[0].pageY)});
+x();"bottom"===a.start?(c.css({top:b.outerHeight()-c.outerHeight()}),n(0,!0)):"top"!==a.start&&(n(e(a.start).position().top,null,!0),a.alwaysVisible||c.hide());window.addEventListener?(this.addEventListener("DOMMouseScroll",v,!1),this.addEventListener("mousewheel",v,!1)):document.attachEvent("onmousewheel",v)}});return this}});e.fn.extend({slimscroll:e.fn.slimScroll})})(jQuery);
 /*
      _ _      _       _
  ___| (_) ___| | __  (_)___

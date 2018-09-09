@@ -5,6 +5,10 @@
 .site-footer__top{
   background: map-get($colors, black);
 
+  @include media("<=v-1199"){
+    padding: px2rem(60px) px2rem(20px) px2rem(30px);
+  }
+
   @include media(">=v-1200"){
     padding: px2rem(87px) px2rem(91px) px2rem(72px);
   }
@@ -19,6 +23,10 @@
   & svg{
     width: 290px;
     height: 73px;
+  }
+
+  @include media("<=v-767"){
+    max-width: 50%;
   }
 }
 
@@ -72,6 +80,9 @@
 
 .site-footer__bottom{
  background: map-get($colors, footer-black);
+ @include media("<=v-1199"){
+   padding: px2rem(8px) px2rem(15px);
+ }
 }
 .site-footer__bottom__inner{
   @include flex-box(wrap);
@@ -100,6 +111,16 @@
   overflow:hidden;
   cursor:pointer;
   z-index: $z-index-min;
+  @include media("<=v-1024"){
+    bottom:67px;
+    
+  }
+  @include media("<=v-991"){
+    opacity:0;
+    visibility: hidden;
+    width:60px;
+    height:60px;
+  }
 
   & img{
     max-width:60%;

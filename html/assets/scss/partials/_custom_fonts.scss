@@ -139,6 +139,18 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon-world.eot?7sjl0c');
+  src:  url('../fonts/icomoon-world.eot?7sjl0c#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon-world.ttf?7sjl0c') format('truetype'),
+    url('../fonts/icomoon-world.woff?7sjl0c') format('woff'),
+    url('../fonts/icomoon-world.svg?7sjl0c#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 [class^="icon-"], [class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'icomoon' !important;
@@ -170,4 +182,7 @@
 }
 .icon-arrow-right:before {
   content: "\e901";
+}
+.icon-world:before {
+  content: "\e905";
 }

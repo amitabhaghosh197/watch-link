@@ -1,6 +1,10 @@
 .wl-product-wrapper{
   @include padding(top, 110px);
   @include padding(bottom, 100px);
+  @include media("<=v-991"){
+    @include padding(top, 30px);
+    @include padding(bottom, 30px);
+  }
 }
 
 .wl-product__inner{
@@ -83,6 +87,10 @@
  @include border-radius(0px);
   & .modal-dialog--wl-product-modal{
     overflow:hidden !important;
+
+    @include media(">=v-1024", "<=v-1199"){
+      max-width:800px;
+    }
     @include media(">=v-1200"){
       max-width:900px;
     }
@@ -99,6 +107,10 @@
   @include flex-box(wrap);
   height: 300px;
   //overflow:hidden;
+
+  @include media("<=v-1024"){
+    @include display(none);
+  }
 
   & img{
     width: $full-100;

@@ -65,6 +65,8 @@
 
 <?php include 'product-modal.php'; ?>
 <?php include 'contact-modal.php'; ?>
+<?php include 'mobile-search-form.php'; ?>
+<?php include 'mobile-sidebar-navbar.php'; ?>
 
 </body>
 </html>

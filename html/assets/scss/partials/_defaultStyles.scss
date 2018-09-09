@@ -68,14 +68,40 @@
 //
 // RESPONSIVE STYLES
 //=======================================
+
+.hidden-from-992{
+	@include media(">=v-991"){
+		@include display(force-none);
+	}
+}
+
+[data-screen="mob-tab"]{
+	@include media(">=v-1200"){
+		@include display(none);
+	}
+}
+
+
 [data-screen="desktop"]{
 	@include media("<=v-1199"){
 		@include display(none);
 	}
 }
 
-[data-screen="mob-tab"]{
-	@include media(">=v-1200"){
+.hidden-upto-1023{
+	@include media("<=v-1023"){
+		@include display(none);
+	}
+}
+
+.hidden-upto-991{
+	@include media("<=v-991"){
+		@include display(none);
+	}
+}
+
+.hidden-upto-767{
+	@include media("<=v-767"){
 		@include display(none);
 	}
 }

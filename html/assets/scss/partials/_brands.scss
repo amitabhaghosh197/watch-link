@@ -10,6 +10,9 @@
   @include auto-margin;
   @include padding(left, 15px);
   @include padding(right, 15px);
+  @include media("<=v-991"){
+    width: $full-100;
+  }
 }
 .brand-items{
   @include padding(left, 10px);
@@ -24,27 +27,44 @@
 
 .call-to-action-wrapper{
   min-height: 120px;
+  @include media("<=v-991"){
+    min-height: auto;
+  }
 }
 .call-action__col{
   @include default-flex-col(50%);
   height:$full-100;
+  @include media("<=v-991"){
+    & svg{
+      @include display(none);
+    }
+  }
+ 
 
   &.preowned--watches{
     background: map-get($colors, thin-grey );
     & .call-action__col__inner-wrapper{
       & span{
         color: map-get($colors, light-yellow);
+        @include media("<=v-991"){
+          color:map-get($colors, white);
+        }
       }
 
       & .call-action__icon{
         color: map-get($colors, light-yellow);
       }
     }
+    @include media("<=v-991"){
+      background: map-get($colors, black);
+    }
   }
   &.unworns--watches{
     background: map-get($colors, light-grey);
+   
     & span, & .call-action__icon{
       color: map-get($colors, black);
+      
     }
   }
 }
@@ -54,6 +74,13 @@
   justify-content: center;
   align-items: center;
   padding: px2rem(20px) 0;
+  @include media("<=v-991"){
+    text-align:center;
+    padding: px2rem(15px) 0;
+    & i{
+      @include display(none);
+    }
+  }
 
   & span{
     font-family: $cinzel-regular;
@@ -61,6 +88,13 @@
     font-weight: $font-weight-bold;
     letter-spacing: px2rem(1.01px);
     @include padding(left, 15px);
+
+    @include media("<=v-991"){
+      @include display(block);
+      @include padding(left,15px);
+      @include padding(right,15px);
+      font-size:px2rem(16px);
+    }
 
   }
 }

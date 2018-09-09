@@ -1,0 +1,105 @@
+/** Mobile Search Form Styles */
+
+.mob-search-form-wrapper{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background: map-get($colors, black);
+    position:fixed;
+    z-index: $z-index-min;
+    bottom:0;
+    right:0;
+    visibility:hidden;
+    opacity:0;
+    @include transform(translate(250px, 250px));
+    
+}
+.mob-search__form{
+    position: absolute;
+    @include absolute-center;
+    padding: 0 15px;
+    opacity:0;
+    //visibility:hidden;
+    @include transform(scale(0));
+    width:80%;
+
+    & .btn--submit{
+        width: $full-100;
+    }
+    
+}
+.mob-search-form-btn{
+    position: absolute;
+    top:15px;
+    right:15px;
+    width:30px;
+    height:30px;
+    padding:0;
+    text-align:center;
+    @include border-radius(50%);
+    color:map-get($colors, red);
+    opacity:0;
+    visibility:hidden;
+}
+
+/*================================== */
+ /*--- MOBILE NAVBAR---*/
+/*===================================*/
+.mob-sidebar-navbar{
+    width: 250px;
+    left:0;
+    top:0;
+    position:fixed;
+    @include full-height;
+    background: map-get($colors, black);
+    z-index: $z-index-max + 100;
+    overflow:hidden;
+    padding: px2rem(40px) px2rem(15px) px2rem(15px);
+    @include transition(transform 0.45s ease-in);
+    @include transform(translate3d(-100%,0,0));
+}
+
+.mob-sidebar-navbar__nav{
+    & > li{
+        & > a{
+            color: map-get($colors, white);
+            font-weight: $font-weight-medium-bold;
+            padding: px2rem(8px) 0;
+            @include display(block);
+            border-bottom: 1px dotted map-get($colors, medium-grey);
+
+        }
+
+        &:last-child{
+            a{
+                border: none;
+            }
+        }
+    }
+}
+.mob-side-navbar-in{
+    overflow:hidden;
+    .mob-sidebar-navbar{
+        @include transform(translate3d(0,0,0));
+        box-shadow:0px 1px 15px rgba(map-get($colors,black),0.50);
+    
+    }
+
+    &:before{
+        content:'';
+        position:fixed;
+        top:0;
+        left:0;
+        z-index: $z-index-max + 10;
+        @include full-width;
+        @include full-height;
+        background: rgba(map-get($colors,black),0.90);
+        
+    }
+}
+
+.btn--navbar-close{
+ @extend .mob-search-form-btn;
+ opacity:1.0;
+ visibility:visible;
+}

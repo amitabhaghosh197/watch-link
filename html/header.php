@@ -31,7 +31,13 @@
     <![endif]-->
 
     <div id="wathchLinksite" class="page-wrapper" >
-       <header class="site-header full-width-grid">
+      <?php
+      /**
+       * Desktop Header
+       * Hidden upto 991px
+      */
+       ?>
+       <header class="site-header full-width-grid hidden-upto-991">
          <div class="site-header__inner-wrapper">
            <div class="site-header__logo-wrapper">
               <a href="" class="site-header--logo">
@@ -46,12 +52,12 @@
                     </div>
                   </div>
                   <div class="search__section ">
-                     <form class="search__section__form" id="" action="/">
+                     <form class="search__section__form" id="" action="/" >
                        <div class="form-group">
                          <input type="search"
                          class="form-control search--form-control"
-                         placeholder="Search your favourite watches..." >
-                           <button class="btn btn--search-submit">
+                         placeholder="Search your favourite watches..." data-role="none">
+                           <button class="btn btn--search-submit" data-role="none">
                              <i class="fa fa-search" aria-hidden="true"></i>
                            </button>
                        </div>
@@ -72,19 +78,19 @@
                   <nav class="site-header__navbar">
                     <ul class="site-header__navbar-nav">
                       <li>
-                        <a href="">Home</a>
+                        <a href="" data-role="none">Home</a>
                       </li>
                       <li>
-                        <a href="">Brand</a>
+                        <a href="" data-role="none">Brand</a>
                       </li>
                       <li>
-                        <a href="">Men</a>
+                        <a href="" data-role="none">Men</a>
                       </li>
                       <li>
-                        <a href="">Women</a>
+                        <a href="" data-role="none">Women</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0);" data-toggle="modal" data-target="#contactModal">Contact</a>
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#contactModal" data-role="none">Contact</a>
                       </li>
                     </ul>
 
@@ -93,7 +99,17 @@
 
          </div>
        </header>
+       <?php
+       /**
+        * Mobile Header Visible Upto 991px
+       */
+         include 'mob-header.php';
+       ?>
      <!--  For Desktop Only -->
-   <div class="full-width-grid" data-screen="desktop">
+   <div class="full-width-grid hidden-upto-1023" >
        <?php include 'banner.php' ; ?>
+   </div>
+   <!-- For Mobile & Tablet Potrait -->
+   <div class="hidden-from-992">
+      <?php include 'mob-banner.php'; ?>
    </div>

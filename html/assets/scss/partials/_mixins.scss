@@ -1,13 +1,12 @@
 //=======================================//
 // FULL HEIGHT & WIDTH MIXIN //
 //=======================================//
-
-@mixin full-height{
+@mixin full-height {
     height: 100%;
     height: 100vh;
 }
 
-@mixin full-width{
+@mixin full-width {
     width: 100%;
     width: 100vw;
 }
@@ -15,34 +14,29 @@
 //=======================================//
 // DISPLAY MIXIN //
 //=======================================//
-
-@mixin display($property, $eq-table: false, $vertical-align: null){
-    @if $property == 'force-none'{
+@mixin display($property, $eq-table: false, $vertical-align: null) {
+    @if $property=='force-none' {
         display: none !important;
     }
     @else {
         display: $property;
     }
-
-    @if $property == 'table'{
+    @if $property=='table' {
         display: table;
         width: $full-100;
         height: $full-100;
-        border-collapse : collapse;
-
-        @if $eq-table == true{
+        border-collapse: collapse;
+        @if $eq-table==true {
             table-layout: fixed;
         }
     }
-
-    @if $property == 'table-cell'{
+    @if $property=='table-cell' {
         display: table-cell;
         width: $full-100;
         height: $full-100;
         vertical-align: $vertical-align;
     }
-
-    @if $property == 'inline-block'{
+    @if $property=='inline-block' {
         vertical-align: middle;
     }
 }
@@ -50,187 +44,169 @@
 //=======================================//
 // MARGIN MIXIN //
 //=======================================//
-
-@mixin margin($pos, $margin){
-  margin-#{$pos}: px2rem($margin);
+@mixin margin($pos, $margin) {
+    margin-#{$pos}: px2rem($margin);
 }
 
-@mixin auto-margin{
-	margin-left: auto;
-	margin-right: auto;
+@mixin auto-margin {
+    margin-left: auto;
+    margin-right: auto;
 }
-
-
 
 //=======================================//
 // PADDING MIXIN //
 //=======================================//
-
-@mixin padding($pos, $padding){
-  padding-#{$pos}: px2rem($padding);
+@mixin padding($pos, $padding) {
+    padding-#{$pos}: px2rem($padding);
 }
-
-
 
 //=======================================//
 // FLEXBOX MIXIN //
 //=======================================//
-
-@mixin flex-box( $wrap, $flex-direction : null){
-  display: flex;
-  flex-wrap: $wrap;
-
-  @if $flex-direction {
-  	flex-direction: $flex-direction;
-  }
-
-  width: $full-100;
+@mixin flex-box( $wrap, $flex-direction: null) {
+    display: flex;
+    flex-wrap: $wrap;
+    @if $flex-direction {
+        flex-direction: $flex-direction;
+    }
+    width: $full-100;
 }
 
 //=====================================//
 // DEFAULT FLEX COLUMN
 //====================================//
-@mixin default-flex-col($width){
- flex : 1 0 $width;
- max-width: $width;
+@mixin default-flex-col($width) {
+    flex: 1 0 $width;
+    max-width: $width;
 }
 
-@mixin auto-flex-col{
+@mixin auto-flex-col {
     flex: 1 0 auto;
     max-width: none;
 }
 
-@mixin absolute-center-flex-box{
+@mixin absolute-center-flex-box {
     justify-content: center;
-    align-items:center;
+    align-items: center;
 }
 
 //=====================================//
 // FLEX COLUMN GRID
 //====================================//
-
-@mixin flex-col-grid( $number, $no-max-width: null ){
- $x : decimal-round( $full-width / $number , 2, round );
- flex: 1 0 $x;
-
- @if $no-max-width{
-     max-width: none;
- } @else {
-     max-width : $x;
- }
- height: $full-100;
+@mixin flex-col-grid( $number, $no-max-width: null) {
+    $x: decimal-round( $full-width / $number, 2, round);
+    flex: 1 0 $x;
+    @if $no-max-width {
+        max-width: none;
+    }
+    @else {
+        max-width: $x;
+    }
+    height: $full-100;
 }
 
 //=====================================//
 // BROWSER PREFIX
 //====================================//
-
-@mixin browser-prefix( $key, $value ){
-             #{ $key } : $value;
-     -webkit-#{ $key } : $value;
-        -moz-#{ $key } : $value;
-          -o-#{ $key } : $value;
-         -ms-#{ $key } : $value;
+@mixin browser-prefix( $key, $value) {
+    #{ $key }: $value;
+    -webkit-#{ $key }: $value;
+    -moz-#{ $key }: $value;
+    -o-#{ $key }: $value;
+    -ms-#{ $key }: $value;
 }
-
-
 
 //=====================================//
 // OPACITY
 //====================================//
-@mixin opacity($value){
-    $ms : $value * 100;
+@mixin opacity($value) {
+    $ms: $value * 100;
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity= #{$ms})";
-    filter: alpha(opacity= #{$ms});
-    -moz-opacity : $value;
+    filter: alpha(opacity=#{$ms});
+    -moz-opacity: $value;
     -khtml-opacity: $value;
     opacity: $value;
 }
 
-
 //=============================================//
 // BORDER RADIUS
 //=============================================//
-
-@mixin border-radius($radius){
+@mixin border-radius($radius) {
     @include browser-prefix(border-radius, $radius);
 }
 
-@mixin box-shadow($bs){
+@mixin box-shadow($bs) {
     box-shadow: $bs;
 }
 
 //=============================================//
 // Placeholder
 //=============================================//
+@mixin placeholder {
+    &::-webkit-input-placeholder {
+        @content;
+    }
+    &::-moz-placeholder {
+        @content;
+    }
+    &:-ms-input-placeholder {
+        @content;
+    }
+    &:-moz-placeholder {
+        @content;
+    }
+}
 
-@mixin placeholder{
-    &::-webkit-input-placeholder{
-      @content;
-    }
-    &::-moz-placeholder{
-      @content;
-    }
-    &:-ms-input-placeholder{
-      @content;
-    }
-    &:-moz-placeholder{
-      @content;
-    }
-  }
+//=============================================//
+// OBJECT FIT
+//=============================================//
+@mixin object-fit($property) {
+    object-fit: $property;
+    font-family:"object-fit:#{$property}";
+}
 
 //=============================================//
 // Transform
 //=============================================//
-
-@mixin transform( $value){
+@mixin transform( $value) {
     @include browser-prefix( transform, $value);
 }
-
 
 //=============================================//
 // Transition
 //=============================================//
-
-@mixin transition($transition){
- @include browser-prefix(transition, $transition );
+@mixin transition($transition) {
+    @include browser-prefix(transition, $transition);
 }
 
-
- //=======================================//
+//=======================================//
 // BORDER RADIUS MIXIN //
 //=======================================//
- @mixin border-radius($br){
-    border-radius: $br ;
-    -webkit-border-radius: $br ;
-    -moz-border-radius: $br ;
-    -ms-border-radius: $br ;
-    -o-border-radius: $br ;
+@mixin border-radius($br) {
+    border-radius: $br;
+    -webkit-border-radius: $br;
+    -moz-border-radius: $br;
+    -ms-border-radius: $br;
+    -o-border-radius: $br;
 }
-
 
 //=============================================//
 // Absolute Center Block
 //=============================================//
-
-@mixin absolute-center{
-    top:50%;
-    left:50%;
+@mixin absolute-center {
+    top: 50%;
+    left: 50%;
     @include transform(translate(-50%, -50%));
     position: absolute;
-
 }
 
 //=============================================//
 // Background Image
 //=============================================//
-
-@mixin background-image($background-size, $background-repeat, $background-position: null ){
-
-    @include browser-prefix(background-size, $background-size );
+@mixin background-image($background-size, $background-repeat, $background-position: null) {
+    @include browser-prefix(background-size, $background-size);
     background-repeat: $background-repeat;
-
-    @if $background-position{
+    @if $background-position {
         background-position: $background-position;
     }
 }
@@ -238,7 +214,6 @@
 //=======================================//
 // ANIMATION MIXIN //
 //=======================================//
-
 @mixin animation($animation-name, $animation-duration, $animation-timing-function, $animation-delay: null, $animation-iteration-count: null, $animation-direction: null, $animation-fill-mode: null) {
     animation: $animation-name $animation-duration $animation-timing-function $animation-delay $animation-iteration-count $animation-fill-mode;
     -webkit-animation: $animation-name $animation-duration $animation-timing-function $animation-delay $animation-iteration-count $animation-fill-mode;
@@ -250,15 +225,12 @@
     @keyframes #{$aimation-name} {
         @content;
     }
-
     @-webkit-keyframes #{$aimation-name} {
         @content;
     }
-
     @-moz-keyframes #{$aimation-name} {
         @content;
     }
-
     @-ms-keyframes #{$aimation-name} {
         @content;
     }

@@ -46,6 +46,11 @@
     color: map-get($colors, black);
   }
 
+  @include media("<=v-991"){
+    padding: px2rem(15px);
+    font-size:px2rem(16px);
+  }
+
 }
 .btn--border-transparent{
   padding: px2rem(15px) px2rem(25px);
@@ -93,7 +98,7 @@
   position:absolute;
   top:15px;
   right:15px;
-  z-index: 500;
+  z-index: 10000;
   width:40px;
   height:40px;
   @include border-radius(50%);
@@ -108,4 +113,17 @@
     @include absolute-center;
     
   }
+}
+
+.btn--black{
+  background: map-get($colors, black);
+  color:map-get($colors, white);
+  
+}
+
+.btn--submit{
+  background: map-get($colors, black);
+  color:map-get($colors, white);
+  font-weight: $font-weight-medium-bold;
+  text-transform: uppercase;
 }

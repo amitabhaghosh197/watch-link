@@ -5,6 +5,7 @@
 @import 'include-media/include-media';
 @import 'slick/slick';
 @import 'slick/slick-theme';
+//@import 'jquery-ui/jquery-ui';
 @import 'partials/functions';
 @import 'partials/mixins';
 @import 'partials/custom_fonts';
@@ -19,4 +20,5 @@
 @import 'partials/brands';
 @import 'partials/products';
 @import 'partials/contact';
+@import 'partials/mobile-search-form-navbar';
 @import 'partials/footer';
